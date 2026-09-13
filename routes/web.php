@@ -38,6 +38,7 @@ Route::middleware(['auth', 'role:calon_advokat'])->prefix('calon')->name('calon.
     Route::get('/berkas', [BerkasController::class, 'index'])->name('berkas');
     Route::post('/berkas/{berkas}/upload', [BerkasController::class, 'upload'])->name('berkas.upload');
     Route::get('/berkas/{berkas}/download', [BerkasController::class, 'download'])->name('berkas.download');
+    Route::get('/berkas/package/download', [BerkasController::class, 'downloadPackage'])->name('berkas.package.download');
 });
 
 Route::middleware(['auth', 'role:law_firm'])->prefix('firm')->name('firm.')->group(function () {

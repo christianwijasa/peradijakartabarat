@@ -63,12 +63,16 @@
             <p class="text-sm text-[#aec1e4] mt-2 leading-relaxed">
                 Unduhan paket terbuka setelah sertifikat selesai magang diterbitkan kantor hukum dan audit Admin DPC dinyatakan lulus.
             </p>
-            <button
-                @disabled(! $bisaUnduh)
-                class="mt-5 w-full rounded-lg border border-white/30 py-2.5 text-sm {{ $bisaUnduh ? 'bg-white text-navy font-medium hover:bg-[#f1f4fa]' : 'text-white/80 cursor-not-allowed' }}"
-            >
-                {{ $bisaUnduh ? 'Unduh paket' : 'Unduh paket (belum tersedia)' }}
-            </button>
+            @if ($bisaUnduh)
+                <a href="{{ route('calon.berkas.package.download') }}" 
+                   class="mt-5 w-full rounded-lg border border-white/30 py-2.5 text-sm bg-white text-navy font-medium hover:bg-[#f1f4fa] text-center inline-block">
+                    Unduh paket ZIP
+                </a>
+            @else
+                <button disabled class="mt-5 w-full rounded-lg border border-white/30 py-2.5 text-sm text-white/80 cursor-not-allowed">
+                    Unduh paket (belum tersedia)
+                </button>
+            @endif
         </div>
     </div>
 </x-layout>
