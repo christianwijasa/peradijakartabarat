@@ -5,6 +5,24 @@
     :menu="\App\Support\SidebarMenu::firm('dashboard')"
     :user-meta="'Advokat Pendamping · '.$firm->nama"
 >
+    @if ($firm->status_verifikasi !== 'terverifikasi')
+        <x-card class="p-6 border-l-4 border-[#b8862f]">
+            <div class="flex items-start gap-3">
+                <div class="w-8 h-8 rounded-full bg-[#fef3e8] text-[#b8862f] flex items-center justify-center text-sm font-semibold shrink-0">!</div>
+                <div class="flex-1">
+                    <p class="font-medium text-[#191a20]">Menunggu verifikasi Admin DPC</p>
+                    <p class="text-sm text-[#5b5d68] mt-1">
+                        Kantor hukum Anda sedang dalam proses verifikasi oleh Admin DPC Jakarta Barat. 
+                        Fitur lowongan magang dan review pelamar akan diaktifkan setelah verifikasi selesai.
+                    </p>
+                    @if ($firm->status_verifikasi === 'perlu_perbaikan')
+                        <p class="text-sm text-[#93321f] mt-2 font-medium">⚠ Status: Perlu perbaikan dokumen</p>
+                    @endif
+                </div>
+            </div>
+        </x-card>
+    @endif
+
     <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-5 items-start">
         <x-card class="p-6">
             <p class="text-[11px] tracking-[0.14em] uppercase text-[#7a7d8b]">Kuota bimbingan gabungan</p>

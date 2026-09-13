@@ -65,4 +65,11 @@ Route::middleware(['auth', 'role:admin_dpc'])->prefix('admin')->name('admin.')->
     Route::post('/monitoring/audit/{calonAdvokat}', [AdminMonitoringController::class, 'setAuditStatus'])->name('monitoring.audit');
 });
 
+Route::get('/register/firm', [App\Http\Controllers\Auth\RegisterFirmController::class, 'create'])
+    ->middleware('guest')
+    ->name('register.firm');
+Route::post('/register/firm', [App\Http\Controllers\Auth\RegisterFirmController::class, 'store'])
+    ->middleware('guest')
+    ->name('register.firm.store');
+
 require __DIR__.'/auth.php';

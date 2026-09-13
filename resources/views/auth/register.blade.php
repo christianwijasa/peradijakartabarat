@@ -50,5 +50,9 @@
                 Daftar
             </x-primary-button>
         </div>
+
+        <p class="text-xs text-[#7a7d8b] mt-4 text-center">
+            Pendaftaran kantor hukum? <a href="{{ route('register.firm') }}" class="text-primary hover:underline">Klik di sini</a>
+        </p>
     </form>
 </x-guest-layout>
