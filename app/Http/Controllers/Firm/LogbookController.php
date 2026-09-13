@@ -49,12 +49,34 @@ class LogbookController extends Controller
         ]);
     }
 
-    public function setujui(LogbookEntry $entry): RedirectResponse
+    public function setujui(Request $request, LogbookEntry $entry): RedirectResponse
     {
         $this->authorizeEntry($entry);
-        $entry->update(['status' => 'disetujui', 'catatan_revisi' => null]);
+        
+        $pendamping = Auth::user()->advokatPendamping;
+        $signatureData = $request->validate([
+            'signature_type' => ['required', 'in:typed,drawn'],
+            'signature_value' => ['required', 'string'],
+        ]);
 
-        return back()->with('status', 'Entri logbook disetujui.');
+        $payload = json_encode([
+            'entry_id' => $entry->id,
+            'tanggal' => $entry->tanggal->format('Y-m-d'),
+            'uraian' => $entry->uraian,
+            'jam' => $entry->jam,
+        ]);
+
+        $entry->update([
+            'status' => 'disetujui',
+            'catatan_revisi' => null,
+            'ditandatangani_oleh' => $pendamping->nama,
+            'kta_penandatangan' => $pendamping->kta_nomor,
+            'tanggal_ttd' => now(),
+            'signature_data' => json_encode($signatureData),
+            'payload_hash' => hash('sha256', $payload),
+        ]);
+
+        return back()->with('status', 'Entri logbook disetujui dan ditandatangani digital.');
     }
 
     public function revisi(Request $request, LogbookEntry $entry): RedirectResponse
@@ -66,24 +88,58 @@ class LogbookController extends Controller
         return back()->with('status', 'Entri logbook dikembalikan untuk revisi.');
     }
 
-    public function tandatanganiSemua(LogbookRekapBulanan $rekap): RedirectResponse
+    public function tandatanganiSemua(Request $request, LogbookRekapBulanan $rekap): RedirectResponse
     {
         $pendamping = Auth::user()->advokatPendamping;
         abort_unless($rekap->calonAdvokat->advokat_pendamping_id === $pendamping->id, 403);
 
-        $rekap->calonAdvokat->logbookEntries()
+        $signatureData = $request->validate([
+            'signature_type' => ['required', 'in:typed,drawn'],
+            'signature_value' => ['required', 'string'],
+        ]);
+
+        $entries = $rekap->calonAdvokat->logbookEntries()
             ->whereYear('tanggal', $rekap->tahun)
             ->whereMonth('tanggal', $rekap->bulan)
             ->whereIn('status', ['menunggu_ttd', 'revisi'])
-            ->update(['status' => 'disetujui', 'catatan_revisi' => null]);
+            ->get();
+
+        foreach ($entries as $entry) {
+            $payload = json_encode([
+                'entry_id' => $entry->id,
+                'tanggal' => $entry->tanggal->format('Y-m-d'),
+                'uraian' => $entry->uraian,
+                'jam' => $entry->jam,
+            ]);
+
+            $entry->update([
+                'status' => 'disetujui',
+                'catatan_revisi' => null,
+                'ditandatangani_oleh' => $pendamping->nama,
+                'kta_penandatangan' => $pendamping->kta_nomor,
+                'tanggal_ttd' => now(),
+                'signature_data' => json_encode($signatureData),
+                'payload_hash' => hash('sha256', $payload),
+            ]);
+        }
+
+        $rekapPayload = json_encode([
+            'rekap_id' => $rekap->id,
+            'bulan' => $rekap->bulan,
+            'tahun' => $rekap->tahun,
+            'entry_count' => $entries->count(),
+        ]);
 
         $rekap->update([
             'status' => 'ditandatangani',
             'ditandatangani_oleh' => $pendamping->id,
+            'kta_penandatangan' => $pendamping->kta_nomor,
             'tanggal_ttd' => now(),
+            'signature_data' => json_encode($signatureData),
+            'payload_hash' => hash('sha256', $rekapPayload),
         ]);
 
-        return back()->with('status', 'Seluruh entri disetujui dan rekap bulanan ditandatangani.');
+        return back()->with('status', 'Seluruh entri disetujui dan rekap bulanan ditandatangani digital.');
     }
 
     private function authorizeEntry(LogbookEntry $entry): void

@@ -26,6 +26,12 @@
                             <x-tag :variant="$tagVariant[$e->status]">{{ $tagLabel[$e->status] }}</x-tag>
                         </div>
                         <p class="text-sm text-[#191a20] mt-2" x-show="!editing">{{ $e->uraian }}</p>
+                        @if ($e->status === 'disetujui' && $e->ditandatangani_oleh)
+                            <div x-show="!editing" class="mt-3 border-l-2 border-tag-ok-fg pl-3 py-2 bg-tag-ok-bg/30 rounded-r">
+                                <p class="text-xs text-tag-ok-fg font-medium">✓ Ditandatangani digital oleh {{ $e->ditandatangani_oleh }}</p>
+                                <p class="text-xs text-[#7a7d8b] mt-0.5">{{ $e->tanggal_ttd?->translatedFormat('j F Y, H:i') }} · KTA {{ $e->kta_penandatangan }}</p>
+                            </div>
+                        @endif
                         @if ($e->status === 'revisi' && $e->catatan_revisi)
                             <div x-show="!editing">
                                 <p class="text-xs text-tag-bad-fg bg-tag-bad-bg rounded-md px-3 py-2 mt-2">Catatan revisi: {{ $e->catatan_revisi }}</p>
