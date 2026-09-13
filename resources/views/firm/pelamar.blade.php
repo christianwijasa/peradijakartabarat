@@ -9,6 +9,12 @@
     :menu="\App\Support\SidebarMenu::firm('pelamar')"
     :user-meta="'Advokat Pendamping · '.$firm->nama"
 >
+    @if ($errors->any())
+        <div class="bg-tag-bad-bg text-tag-bad-fg text-sm rounded-lg px-4 py-3">
+            {{ $errors->first() }}
+        </div>
+    @endif
+
     <div class="flex flex-col gap-4">
         @forelse ($lamarans as $l)
             <x-card class="p-6 flex flex-col md:flex-row md:items-center gap-4">
@@ -23,14 +29,39 @@
                     <p class="text-sm text-[#5b5d68] mt-1">{{ $l->calonAdvokat->universitas }} · IPK {{ $l->calonAdvokat->ipk }}</p>
                     <p class="text-xs text-[#7a7d8b] mt-0.5">Melamar {{ $l->tanggal_lamar->translatedFormat('j M Y') }} · {{ $l->lowongan->judul }}</p>
                 </div>
-                <div class="flex items-center gap-2.5 shrink-0">
+                <div class="flex flex-wrap items-center gap-2.5 shrink-0">
                     <x-tag :variant="$tagVariant[$l->status]">{{ $tagLabel[$l->status] }}</x-tag>
-                    @if ($l->status !== 'diterima')
-                        <form method="POST" action="{{ route('firm.pelamar.terima', $l) }}">
+                    
+                    @if ($l->status === 'terkirim')
+                        <form method="POST" action="{{ route('firm.pelamar.status', $l) }}">
                             @csrf
-                            <x-btn>Terbitkan surat penerimaan</x-btn>
+                            <input type="hidden" name="status" value="review_cv">
+                            <x-btn variant="ghost">Review CV</x-btn>
                         </form>
-                    @else
+                    @endif
+
+                    @if ($l->status === 'review_cv')
+                        <form method="POST" action="{{ route('firm.pelamar.status', $l) }}">
+                            @csrf
+                            <input type="hidden" name="status" value="interview">
+                            <x-btn variant="ghost">Jadwalkan Interview</x-btn>
+                        </form>
+                    @endif
+
+                    @if ($l->status === 'interview')
+                        <form method="POST" action="{{ route('firm.pelamar.status', $l) }}" class="inline">
+                            @csrf
+                            <input type="hidden" name="status" value="diterima">
+                            <x-btn>Terima</x-btn>
+                        </form>
+                        <form method="POST" action="{{ route('firm.pelamar.status', $l) }}" class="inline">
+                            @csrf
+                            <input type="hidden" name="status" value="tidak_lanjut">
+                            <x-btn variant="danger-outline">Tidak Lanjut</x-btn>
+                        </form>
+                    @endif
+
+                    @if ($l->status === 'diterima')
                         <x-btn variant="done" disabled>Surat terkirim</x-btn>
                     @endif
                 </div>

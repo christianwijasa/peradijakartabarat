@@ -17,7 +17,7 @@
             </div>
             <div class="mt-3 divide-y divide-[#eceef2]">
                 @forelse ($entries as $e)
-                    <div class="py-4">
+                    <div class="py-4" x-data="{ editing: false }">
                         <div class="flex items-center justify-between gap-3">
                             <span class="text-xs text-[#7a7d8b]">{{ $e->tanggal->translatedFormat('j M') }}</span>
                             <x-tag variant="mute">{{ $e->jenis_kegiatan }}</x-tag>
@@ -25,9 +25,38 @@
                             <span class="flex-1"></span>
                             <x-tag :variant="$tagVariant[$e->status]">{{ $tagLabel[$e->status] }}</x-tag>
                         </div>
-                        <p class="text-sm text-[#191a20] mt-2">{{ $e->uraian }}</p>
+                        <p class="text-sm text-[#191a20] mt-2" x-show="!editing">{{ $e->uraian }}</p>
                         @if ($e->status === 'revisi' && $e->catatan_revisi)
-                            <p class="text-xs text-tag-bad-fg bg-tag-bad-bg rounded-md px-3 py-2 mt-2">Catatan revisi: {{ $e->catatan_revisi }}</p>
+                            <div x-show="!editing">
+                                <p class="text-xs text-tag-bad-fg bg-tag-bad-bg rounded-md px-3 py-2 mt-2">Catatan revisi: {{ $e->catatan_revisi }}</p>
+                                <button @click="editing = true" class="text-xs text-primary hover:underline mt-2">Edit & kirim ulang</button>
+                            </div>
+                            <form method="POST" action="{{ route('calon.logbook.update', $e->id) }}" x-show="editing" class="mt-3 flex flex-col gap-3">
+                                @csrf
+                                @method('PATCH')
+                                <div>
+                                    <label class="text-xs text-[#7a7d8b]">Jenis kegiatan</label>
+                                    <select name="jenis_kegiatan" class="mt-1 w-full rounded-lg border-[#e0e2e9] text-sm focus:border-primary focus:ring-primary">
+                                        <option {{ $e->jenis_kegiatan === 'Riset hukum' ? 'selected' : '' }}>Riset hukum</option>
+                                        <option {{ $e->jenis_kegiatan === 'Pendampingan sidang' ? 'selected' : '' }}>Pendampingan sidang</option>
+                                        <option {{ $e->jenis_kegiatan === 'Drafting dokumen' ? 'selected' : '' }}>Drafting dokumen</option>
+                                        <option {{ $e->jenis_kegiatan === 'Konsultasi internal' ? 'selected' : '' }}>Konsultasi internal</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-xs text-[#7a7d8b]">Uraian kegiatan</label>
+                                    <textarea name="uraian" rows="4" required class="mt-1 w-full rounded-lg border-[#e0e2e9] text-sm focus:border-primary focus:ring-primary">{{ $e->uraian }}</textarea>
+                                </div>
+                                <div>
+                                    <label class="text-xs text-[#7a7d8b]">Durasi (jam)</label>
+                                    <input type="number" step="0.5" min="0.5" max="24" name="jam" value="{{ $e->jam }}"
+                                        class="mt-1 w-full rounded-lg border-[#e0e2e9] text-sm focus:border-primary focus:ring-primary">
+                                </div>
+                                <div class="flex gap-2">
+                                    <x-btn type="submit">Kirim ulang</x-btn>
+                                    <button type="button" @click="editing = false" class="text-xs text-[#7a7d8b] hover:underline px-3">Batal</button>
+                                </div>
+                            </form>
                         @endif
                     </div>
                 @empty

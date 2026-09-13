@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AuditAkhir;
 use App\Models\CalonAdvokat;
 use App\Models\LawFirm;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class MonitoringController extends Controller
@@ -80,5 +83,30 @@ class MonitoringController extends Controller
             'alerts' => $alerts,
             'auditList' => $auditList,
         ]);
+    }
+
+    public function setAuditStatus(Request $request, CalonAdvokat $calonAdvokat): RedirectResponse
+    {
+        $data = $request->validate([
+            'status' => ['required', 'in:lulus_audit,dalam_proses,berkas_kurang'],
+            'catatan' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        AuditAkhir::updateOrCreate(
+            ['calon_advokat_id' => $calonAdvokat->id],
+            [
+                'status' => $data['status'],
+                'catatan' => $data['catatan'] ?? '',
+                'tanggal_audit' => now(),
+            ]
+        );
+
+        $messages = [
+            'lulus_audit' => 'Status audit diubah menjadi lulus audit untuk '.$calonAdvokat->user->name.'.',
+            'dalam_proses' => 'Status audit diubah menjadi dalam proses untuk '.$calonAdvokat->user->name.'.',
+            'berkas_kurang' => 'Status audit diubah menjadi berkas kurang untuk '.$calonAdvokat->user->name.'.',
+        ];
+
+        return back()->with('status', $messages[$data['status']]);
     }
 }

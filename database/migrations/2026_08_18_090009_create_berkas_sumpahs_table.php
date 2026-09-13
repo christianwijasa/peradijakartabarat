@@ -17,6 +17,7 @@ return new class extends Migration
             $table->enum('jenis', [
                 'sertifikat_pkpa', 'sertifikat_lulus_upa', 'ijazah_transkrip',
                 'rekap_logbook', 'sertifikat_selesai_magang', 'surat_rekomendasi_dpc',
+                'surat_penerimaan',
             ]);
             $table->string('sumber')->nullable();
             $table->enum('status', ['lengkap', 'berjalan', 'menunggu'])->default('menunggu');

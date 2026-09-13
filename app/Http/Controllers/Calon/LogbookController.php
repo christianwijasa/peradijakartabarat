@@ -56,4 +56,28 @@ class LogbookController extends Controller
 
         return back()->with('status', 'Catatan harian tersimpan dan menunggu tanda tangan pendamping.');
     }
+
+    public function update(Request $request, $id): RedirectResponse
+    {
+        $ca = Auth::user()->calonAdvokat;
+        $entry = $ca->logbookEntries()->findOrFail($id);
+
+        abort_unless($entry->status === 'revisi', 403, 'Hanya entri dengan status revisi yang dapat diedit.');
+
+        $data = $request->validate([
+            'jenis_kegiatan' => ['required', 'string', 'max:255'],
+            'uraian' => ['required', 'string'],
+            'jam' => ['required', 'numeric', 'min:0.5', 'max:24'],
+        ]);
+
+        $entry->update([
+            'jenis_kegiatan' => $data['jenis_kegiatan'],
+            'jam' => $data['jam'],
+            'uraian' => $data['uraian'],
+            'status' => 'menunggu_ttd',
+            'catatan_revisi' => null,
+        ]);
+
+        return back()->with('status', 'Revisi berhasil dikirim ulang untuk ditinjau pendamping.');
+    }
 }

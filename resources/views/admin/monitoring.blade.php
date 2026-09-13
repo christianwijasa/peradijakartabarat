@@ -55,12 +55,37 @@
             <h2 class="font-semibold text-[15px]">Audit akhir · siap sumpah</h2>
             <div class="mt-3 divide-y divide-[#eceef2]">
                 @forelse ($auditList as $row)
-                    <div class="flex items-center justify-between gap-3 py-3">
-                        <div class="min-w-0">
-                            <p class="text-sm font-medium truncate">{{ $row['ca']->user->name }}</p>
-                            <p class="text-xs text-[#7a7d8b]">{{ $row['detail'] }}</p>
+                    <div class="py-3" x-data="{ open: false }">
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="min-w-0 flex-1">
+                                <p class="text-sm font-medium truncate">{{ $row['ca']->user->name }}</p>
+                                <p class="text-xs text-[#7a7d8b]">{{ $row['detail'] }}</p>
+                            </div>
+                            <x-tag :variant="$auditVariant[$row['status']]">{{ $auditLabel[$row['status']] }}</x-tag>
+                            <button @click="open = !open" class="text-xs text-primary hover:underline whitespace-nowrap">
+                                <span x-text="open ? 'Tutup' : 'Ubah status'"></span>
+                            </button>
                         </div>
-                        <x-tag :variant="$auditVariant[$row['status']]">{{ $auditLabel[$row['status']] }}</x-tag>
+                        <form method="POST" action="{{ route('admin.monitoring.audit', $row['ca']) }}" x-show="open" x-cloak class="mt-3 flex flex-col gap-3 p-3 bg-[#f7f8fa] rounded-lg">
+                            @csrf
+                            <div>
+                                <label class="text-xs text-[#7a7d8b]">Status audit</label>
+                                <select name="status" class="mt-1 w-full rounded-lg border-[#e0e2e9] text-sm focus:border-primary focus:ring-primary">
+                                    <option value="lulus_audit" {{ $row['status'] === 'lulus_audit' ? 'selected' : '' }}>Lulus audit</option>
+                                    <option value="dalam_proses" {{ $row['status'] === 'dalam_proses' ? 'selected' : '' }}>Dalam proses</option>
+                                    <option value="berkas_kurang" {{ $row['status'] === 'berkas_kurang' ? 'selected' : '' }}>Berkas kurang</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-xs text-[#7a7d8b]">Catatan</label>
+                                <textarea name="catatan" rows="2" placeholder="Catatan untuk calon advokat..."
+                                    class="mt-1 w-full rounded-lg border-[#e0e2e9] text-sm focus:border-primary focus:ring-primary"></textarea>
+                            </div>
+                            <div class="flex gap-2">
+                                <x-btn type="submit">Simpan</x-btn>
+                                <button type="button" @click="open = false" class="text-xs text-[#7a7d8b] hover:underline px-3">Batal</button>
+                            </div>
+                        </form>
                     </div>
                 @empty
                     <p class="py-6 text-sm text-[#7a7d8b]">Belum ada calon advokat mendekati audit akhir.</p>

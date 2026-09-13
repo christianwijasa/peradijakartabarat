@@ -35,6 +35,7 @@ class SidebarMenu
 
         return [
             ['label' => 'Dashboard & Kuota', 'route' => route('firm.dashboard'), 'active' => $active === 'dashboard'],
+            ['label' => 'Lowongan Magang', 'route' => route('firm.lowongan.index'), 'active' => $active === 'lowongan'],
             ['label' => 'Pelamar', 'route' => route('firm.pelamar'), 'active' => $active === 'pelamar', 'badge' => $pelamarBadge ?: null],
             ['label' => 'Review Logbook', 'route' => route('firm.logbook'), 'active' => $active === 'logbook'],
         ];

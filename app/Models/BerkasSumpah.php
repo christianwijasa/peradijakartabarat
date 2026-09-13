@@ -33,6 +33,7 @@ class BerkasSumpah extends Model
             'rekap_logbook' => 'Rekap logbook 24 bulan',
             'sertifikat_selesai_magang' => 'Sertifikat selesai magang',
             'surat_rekomendasi_dpc' => 'Surat rekomendasi DPC',
+            'surat_penerimaan' => 'Surat penerimaan magang',
             default => $this->jenis,
         };
     }
