@@ -8,6 +8,7 @@ use App\Http\Controllers\Calon\LamaranController;
 use App\Http\Controllers\Calon\LogbookController;
 use App\Http\Controllers\Calon\LowonganController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Firm\DashboardController as FirmDashboardController;
 use App\Http\Controllers\Firm\LogbookController as FirmLogbookController;
 use App\Http\Controllers\Firm\PelamarController;
@@ -18,9 +19,7 @@ Route::get('/up', function () {
     return response()->noContent();
 });
 
-Route::get('/', function () {
-    return auth()->check() ? redirect()->route('dashboard') : redirect()->route('login');
-});
+Route::match(['GET', 'HEAD'], '/', HomeController::class);
 
 Route::get('/dashboard', DashboardController::class)->middleware('auth')->name('dashboard');
 

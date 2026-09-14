@@ -23,7 +23,16 @@ class AppServiceProvider extends ServiceProvider
         $rootUrl = config('app.url');
 
         if (is_string($rootUrl) && $rootUrl !== '') {
-            URL::forceRootUrl(rtrim($rootUrl, '/'));
+            $normalized = rtrim($rootUrl, '/');
+            URL::forceRootUrl($normalized);
+
+            $urlPath = parse_url($normalized, PHP_URL_PATH);
+            if (is_string($urlPath) && $urlPath !== '' && $urlPath !== '/') {
+                $cookiePath = rtrim($urlPath, '/').'/';
+                if (config('session.path') === '/') {
+                    config(['session.path' => $cookiePath]);
+                }
+            }
         }
     }
 }

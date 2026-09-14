@@ -1,0 +1,11 @@
+# Copy next to index.php on shared hosting (subfolder install).
+# Replace REWRITE_BASE with your URL path, e.g. /laravel/peradijakartabarat
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /REWRITE_BASE/
+
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>
