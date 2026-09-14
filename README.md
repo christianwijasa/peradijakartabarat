@@ -38,15 +38,38 @@ npm run build
 php artisan serve
 ```
 
-## Akun demo (password: `password`)
+## Akun demo
 
-| Peran | Email |
-|---|---|
-| Calon Advokat | andi@peradijakbar.test |
-| Law Firm / Pendamping | hendra@peradijakbar.test |
-| Admin DPC | admin@peradijakbar.test |
+**Password untuk semua akun di bawah:** `password` (konstanta `Database\Seeders\DemoUserCatalog::PASSWORD`).
 
-Registrasi mandiri (`/register`) tersedia untuk peran Calon Advokat. Akun Law Firm dan Admin DPC diprovisi langsung oleh DPC (tidak melalui halaman registrasi publik).
+### Login utama (satu per peran)
+
+| Peran | Email | Catatan |
+|---|---|---|
+| Calon Advokat | `andi@peradijakbar.test` | Magang 14/24 bulan, Wibisono & Rekan |
+| Law Firm / Pendamping | `hendra@peradijakbar.test` | Dr. Hendra Wibisono — pelamar & logbook |
+| Admin DPC | `admin@peradijakbar.test` | Verifikasi & monitoring |
+
+### Calon advokat tambahan (password sama)
+
+| Email | Kode CA | Skenario singkat |
+|---|---|---|
+| `andi@peradijakbar.test` | CA-2025-0417 | Lamaran diterima, logbook & berkas aktif |
+| `rizky@peradijakbar.test` | CA-2024-0288 | 22/24 bulan, audit akhir berjalan |
+| `nadia@peradijakbar.test` | CA-2025-0512 | 11/24 bulan, logbook rapi |
+| `fajar@peradijakbar.test` | CA-2026-0031 | 3/24 bulan, menunggu ttd rekap |
+| `maya@peradijakbar.test` | CA-2026-0058 | Admin belum verifikasi, lamaran interview |
+| `bagus@peradijakbar.test` | CA-2025-0349 | Perlu perbaikan verifikasi, CV review |
+| `laras@peradijakbar.test` | CA-2026-0072 | Verifikasi pending, CV review |
+| `rina@peradijakbar.test` | CA-2025-0201 | Lamaran ditolak |
+| `indra@peradijakbar.test` | CA-2025-0155 | Magang di Santika & Partners |
+| `dewi@peradijakbar.test` | CA-2024-0090 | 24/24 bulan, audit lulus, berkas lengkap |
+| `yoga@peradijakbar.test` | CA-2024-0102 | 24/24 bulan, audit berkas kurang |
+| `sinta@peradijakbar.test` | CA-2025-0233 | LBH Trisakti, 9 bulan |
+
+Daftar lengkap juga di `database/seeders/DemoUserCatalog.php`. Jalankan ulang data demo: `php artisan migrate:fresh --seed`.
+
+Registrasi mandiri (`/register`) hanya untuk peran Calon Advokat. Law Firm dan Admin DPC hanya dari seeder / provisi DPC.
 
 ## Shared hosting (repo in `src/`)
 

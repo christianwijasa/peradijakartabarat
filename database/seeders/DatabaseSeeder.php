@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $password = Hash::make('password');
+        $password = Hash::make(DemoUserCatalog::PASSWORD);
 
         // ---- Law firms (verified, provide lowongan, appear in monitoring) ----
         $wibisono = LawFirm::create([
