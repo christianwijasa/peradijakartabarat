@@ -16,12 +16,12 @@ class PelamarController extends Controller
         $firm = $pendamping->lawFirm;
 
         $internshipApplications = InternshipApplication::whereHas('jobPosting', fn ($q) => $q->where('law_firm_id', $firm->id))
-            ->where('status', '!=', 'REJECTED')
+            ->where('status', '!=', InternshipApplication::STATUS_REJECTED)
             ->with(['candidateAdvocate.user', 'jobPosting'])
             ->orderByDesc('applied_on')
             ->get();
 
-        return view('firm.pelamar', ['lamarans' => $internshipApplications, 'firm' => $firm]);
+        return view('firm.pelamar', ['internshipApplications' => $internshipApplications, 'firm' => $firm]);
     }
 
     public function terima(InternshipApplication $internshipApplication): RedirectResponse
@@ -29,7 +29,7 @@ class PelamarController extends Controller
         $pendamping = Auth::user()->supervisingLawyer;
         abort_unless($internshipApplication->jobPosting->law_firm_id === $pendamping->law_firm_id, 403);
 
-        $internshipApplication->update(['status' => 'ACCEPTED']);
+        $internshipApplication->update(['status' => InternshipApplication::STATUS_ACCEPTED]);
 
         $ca = $internshipApplication->candidateAdvocate;
         $ca->update([

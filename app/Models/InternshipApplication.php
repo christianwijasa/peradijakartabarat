@@ -10,6 +10,20 @@ class InternshipApplication extends Model
 {
     use HasFactory;
 
+    public const STATUS_SUBMITTED = 'SUBMITTED';
+
+    public const STATUS_CV_REVIEW = 'CV_REVIEW';
+
+    public const STATUS_INTERVIEW = 'INTERVIEW';
+
+    public const STATUS_ACCEPTED = 'ACCEPTED';
+
+    public const STATUS_REJECTED = 'REJECTED';
+
+    protected $attributes = [
+        'status' => self::STATUS_SUBMITTED,
+    ];
+
     protected $fillable = [
         'candidate_advocate_id',
         'job_posting_id',

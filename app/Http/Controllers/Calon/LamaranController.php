@@ -16,6 +16,6 @@ class LamaranController extends Controller
             ->latest('applied_on')
             ->get();
 
-        return view('calon.lamaran', ['lamarans' => $internshipApplications]);
+        return view('calon.lamaran', ['internshipApplications' => $internshipApplications]);
     }
 }

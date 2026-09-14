@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Calon;
 
 use App\Http\Controllers\Controller;
+use App\Models\InternshipApplication;
 use App\Models\JobPosting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -47,7 +48,7 @@ class LowonganController extends Controller
         if (! $ca->internshipApplications()->where('job_posting_id', $jobPosting->id)->exists()) {
             $ca->internshipApplications()->create([
                 'job_posting_id' => $jobPosting->id,
-                'status' => 'SUBMITTED',
+                'status' => InternshipApplication::STATUS_SUBMITTED,
                 'applied_on' => now(),
             ]);
         }
