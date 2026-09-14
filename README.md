@@ -48,6 +48,10 @@ php artisan serve
 
 Registrasi mandiri (`/register`) tersedia untuk peran Calon Advokat. Akun Law Firm dan Admin DPC diprovisi langsung oleh DPC (tidak melalui halaman registrasi publik).
 
+## Shared hosting (repo in `src/`)
+
+Same layout as other fchr.space Laravel apps: git clone lives in `src/`, `public/` contents (`index.php`, `.htaccess`, `build/`) sit beside `src/`. Point `index.php` at `src/vendor` and `src/bootstrap/app.php`; call `$app->usePublicPath(__DIR__)` only when `build/manifest.json` exists next to `index.php`. Run `npm run build` in `src/` (manifest defaults to `src/public/build/`). Set `APP_URL` and `SESSION_PATH` to the subfolder path. Avoid `route:cache` on the host; clear `bootstrap/cache/routes-v7.php` if `/` rejects GET.
+
 ## Struktur data inti
 
 `LawFirm`, `SupervisingLawyer`, `CandidateAdvocate`, `JobPosting`, `InternshipApplication`, `LogbookEntry`, `MonthlyLogbookSummary`, `VerificationChecklist`, `OathDocument`, `FinalAudit` — lihat `database/migrations` dan `app/Models`.
