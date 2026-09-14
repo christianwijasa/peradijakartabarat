@@ -37,12 +37,17 @@ class AppServiceProvider extends ServiceProvider
             $normalized = rtrim($rootUrl, '/');
             URL::forceRootUrl($normalized);
 
+            if (str_starts_with($normalized, 'https://')) {
+                URL::forceScheme('https');
+
+                if (env('SESSION_SECURE_COOKIE') === null) {
+                    config(['session.secure' => true]);
+                }
+            }
+
             $urlPath = parse_url($normalized, PHP_URL_PATH);
             if (is_string($urlPath) && $urlPath !== '' && $urlPath !== '/') {
-                $cookiePath = rtrim($urlPath, '/').'/';
-                if (config('session.path') === '/') {
-                    config(['session.path' => $cookiePath]);
-                }
+                config(['session.path' => rtrim($urlPath, '/').'/']);
             }
         }
     }
