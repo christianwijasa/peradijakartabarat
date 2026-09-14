@@ -6,26 +6,30 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class LogbookEntry extends Model
+class MonthlyLogbookSummary extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'candidate_advocate_id',
-        'entry_date',
-        'activity_type',
-        'hours',
-        'description',
+        'month',
+        'year',
+        'signed_by_supervising_lawyer_id',
         'status',
-        'revision_notes',
+        'signed_at',
     ];
 
     protected $casts = [
-        'entry_date' => 'date',
+        'signed_at' => 'datetime',
     ];
 
     public function candidateAdvocate(): BelongsTo
     {
         return $this->belongsTo(CandidateAdvocate::class);
+    }
+
+    public function signedBySupervisingLawyer(): BelongsTo
+    {
+        return $this->belongsTo(SupervisingLawyer::class, 'signed_by_supervising_lawyer_id');
     }
 }

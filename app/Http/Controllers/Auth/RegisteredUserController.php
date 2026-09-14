@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\CalonAdvokat;
+use App\Models\CandidateAdvocate;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -36,8 +36,8 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'nik' => ['nullable', 'string', 'max:32'],
-            'universitas' => ['nullable', 'string', 'max:255'],
+            'national_id_number' => ['nullable', 'string', 'max:32'],
+            'university' => ['nullable', 'string', 'max:255'],
         ]);
 
         $user = DB::transaction(function () use ($request) {
@@ -49,15 +49,15 @@ class RegisteredUserController extends Controller
             ]);
 
             $year = now()->year;
-            $sequence = CalonAdvokat::whereYear('created_at', $year)->count() + 1;
+            $sequence = CandidateAdvocate::whereYear('created_at', $year)->count() + 1;
 
-            CalonAdvokat::create([
+            CandidateAdvocate::create([
                 'user_id' => $user->id,
-                'kode_ca' => sprintf('CA-%d-%04d', $year, $sequence),
-                'nik' => $request->nik,
-                'universitas' => $request->universitas,
-                'status_keanggotaan' => 'aktif',
-                'status_verifikasi' => 'menunggu',
+                'candidate_code' => sprintf('CA-%d-%04d', $year, $sequence),
+                'national_id_number' => $request->national_id_number,
+                'university' => $request->university,
+                'membership_status' => 'ACTIVE',
+                'verification_status' => 'PENDING',
             ]);
 
             return $user;

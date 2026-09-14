@@ -2,8 +2,8 @@
 
 namespace App\Support;
 
-use App\Models\CalonAdvokat;
-use App\Models\Lamaran;
+use App\Models\CandidateAdvocate;
+use App\Models\InternshipApplication;
 use App\Models\LawFirm;
 use Illuminate\Support\Facades\Auth;
 
@@ -11,8 +11,8 @@ class SidebarMenu
 {
     public static function calon(string $active): array
     {
-        $ca = Auth::user()->calonAdvokat;
-        $logbookBadge = $ca ? $ca->logbookEntries()->where('status', 'menunggu_ttd')->count() : 0;
+        $ca = Auth::user()->candidateAdvocate;
+        $logbookBadge = $ca ? $ca->logbookEntries()->where('status', 'PENDING_SIGNATURE')->count() : 0;
 
         return [
             ['label' => 'Dashboard', 'route' => route('calon.dashboard'), 'active' => $active === 'dashboard'],
@@ -25,11 +25,11 @@ class SidebarMenu
 
     public static function firm(string $active): array
     {
-        $pendamping = Auth::user()->advokatPendamping;
+        $pendamping = Auth::user()->supervisingLawyer;
         $pelamarBadge = 0;
         if ($pendamping) {
-            $pelamarBadge = Lamaran::whereHas('lowongan', fn ($q) => $q->where('law_firm_id', $pendamping->law_firm_id))
-                ->whereIn('status', ['terkirim', 'review_cv', 'interview'])
+            $pelamarBadge = InternshipApplication::whereHas('jobPosting', fn ($q) => $q->where('law_firm_id', $pendamping->law_firm_id))
+                ->whereIn('status', ['SUBMITTED', 'CV_REVIEW', 'INTERVIEW'])
                 ->count();
         }
 
@@ -42,8 +42,8 @@ class SidebarMenu
 
     public static function admin(string $active): array
     {
-        $badge = CalonAdvokat::whereIn('status_verifikasi', ['menunggu', 'perlu_perbaikan'])->count()
-            + LawFirm::whereIn('status_verifikasi', ['menunggu', 'perlu_perbaikan'])->count();
+        $badge = CandidateAdvocate::whereIn('verification_status', ['PENDING', 'NEEDS_CORRECTION'])->count()
+            + LawFirm::whereIn('verification_status', ['PENDING', 'NEEDS_CORRECTION'])->count();
 
         return [
             ['label' => 'Verifikasi', 'route' => route('admin.verifikasi'), 'active' => $active === 'verifikasi', 'badge' => $badge ?: null],

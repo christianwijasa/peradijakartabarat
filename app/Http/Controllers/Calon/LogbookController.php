@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Calon;
 
 use App\Http\Controllers\Controller;
-use App\Models\LogbookRekapBulanan;
+use App\Models\MonthlyLogbookSummary;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,45 +13,45 @@ class LogbookController extends Controller
 {
     public function index(): View
     {
-        $ca = Auth::user()->calonAdvokat;
+        $ca = Auth::user()->candidateAdvocate;
 
         $now = now();
         $entries = $ca->logbookEntries()
-            ->whereYear('tanggal', $now->year)
-            ->whereMonth('tanggal', $now->month)
-            ->orderByDesc('tanggal')
+            ->whereYear('entry_date', $now->year)
+            ->whereMonth('entry_date', $now->month)
+            ->orderByDesc('entry_date')
             ->get();
 
         return view('calon.logbook', [
             'ca' => $ca,
             'entries' => $entries,
             'bulanLabel' => $now->translatedFormat('F Y'),
-            'pending' => $entries->where('status', 'menunggu_ttd')->count(),
+            'pending' => $entries->where('status', 'PENDING_SIGNATURE')->count(),
         ]);
     }
 
     public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'jenis_kegiatan' => ['required', 'string', 'max:255'],
-            'uraian' => ['required', 'string'],
-            'jam' => ['required', 'numeric', 'min:0.5', 'max:24'],
+            'activity_type' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string'],
+            'hours' => ['required', 'numeric', 'min:0.5', 'max:24'],
         ]);
 
-        $ca = Auth::user()->calonAdvokat;
+        $ca = Auth::user()->candidateAdvocate;
 
         $ca->logbookEntries()->create([
-            'tanggal' => now(),
-            'jenis_kegiatan' => $data['jenis_kegiatan'],
-            'jam' => $data['jam'],
-            'uraian' => $data['uraian'],
-            'status' => 'menunggu_ttd',
+            'entry_date' => now(),
+            'activity_type' => $data['activity_type'],
+            'hours' => $data['hours'],
+            'description' => $data['description'],
+            'status' => 'PENDING_SIGNATURE',
         ]);
 
         $now = now();
-        LogbookRekapBulanan::firstOrCreate(
-            ['calon_advokat_id' => $ca->id, 'bulan' => $now->month, 'tahun' => $now->year],
-            ['status' => 'berjalan']
+        MonthlyLogbookSummary::firstOrCreate(
+            ['candidate_advocate_id' => $ca->id, 'month' => $now->month, 'year' => $now->year],
+            ['status' => 'IN_PROGRESS']
         );
 
         return back()->with('status', 'Catatan harian tersimpan dan menunggu tanda tangan pendamping.');

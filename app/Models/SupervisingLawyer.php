@@ -7,21 +7,21 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Lowongan extends Model
+class SupervisingLawyer extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'law_firm_id',
-        'judul',
-        'deskripsi',
-        'bidang',
-        'kuota',
-        'status',
+        'user_id',
+        'name',
+        'bar_membership_number',
+        'bar_membership_active',
+        'years_of_experience',
     ];
 
     protected $casts = [
-        'bidang' => 'array',
+        'bar_membership_active' => 'boolean',
     ];
 
     public function lawFirm(): BelongsTo
@@ -29,13 +29,13 @@ class Lowongan extends Model
         return $this->belongsTo(LawFirm::class);
     }
 
-    public function lamarans(): HasMany
+    public function user(): BelongsTo
     {
-        return $this->hasMany(Lamaran::class);
+        return $this->belongsTo(User::class);
     }
 
-    public function slotTersisa(): int
+    public function candidateAdvocates(): HasMany
     {
-        return max(0, $this->kuota - $this->lamarans()->where('status', 'diterima')->count());
+        return $this->hasMany(CandidateAdvocate::class);
     }
 }

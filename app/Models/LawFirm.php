@@ -12,58 +12,58 @@ class LawFirm extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nama',
-        'alamat',
-        'sk_kemenkumham',
-        'setara_kantor_advokat',
-        'kuota_maks',
-        'status_verifikasi',
-        'diverifikasi_pada',
+        'name',
+        'address',
+        'ministry_registration_number',
+        'is_equivalent_law_firm',
+        'max_quota',
+        'verification_status',
+        'verified_at',
     ];
 
     protected $casts = [
-        'setara_kantor_advokat' => 'boolean',
-        'diverifikasi_pada' => 'datetime',
+        'is_equivalent_law_firm' => 'boolean',
+        'verified_at' => 'datetime',
     ];
 
-    public function advokatPendampings(): HasMany
+    public function supervisingLawyers(): HasMany
     {
-        return $this->hasMany(AdvokatPendamping::class);
+        return $this->hasMany(SupervisingLawyer::class);
     }
 
-    public function calonAdvokats(): HasMany
+    public function candidateAdvocates(): HasMany
     {
-        return $this->hasMany(CalonAdvokat::class);
+        return $this->hasMany(CandidateAdvocate::class);
     }
 
-    public function lowongans(): HasMany
+    public function jobPostings(): HasMany
     {
-        return $this->hasMany(Lowongan::class);
+        return $this->hasMany(JobPosting::class);
     }
 
     public function checklistItems(): MorphMany
     {
-        return $this->morphMany(VerifikasiChecklist::class, 'checkable');
+        return $this->morphMany(VerificationChecklist::class, 'checkable');
     }
 
     public function kuotaTerpakai(): int
     {
-        return $this->calonAdvokats()->where('status_keanggotaan', 'aktif')->count();
+        return $this->candidateAdvocates()->where('membership_status', 'ACTIVE')->count();
     }
 
     public function kuotaTersisa(): int
     {
-        return max(0, $this->kuota_maks - $this->kuotaTerpakai());
+        return max(0, $this->max_quota - $this->kuotaTerpakai());
     }
 
     public function kepatuhanLogbookPersen(): int
     {
-        $entries = LogbookEntry::whereIn('calon_advokat_id', $this->calonAdvokats()->pluck('id'));
+        $entries = LogbookEntry::whereIn('candidate_advocate_id', $this->candidateAdvocates()->pluck('id'));
         $total = $entries->count();
         if ($total === 0) {
             return 0;
         }
-        $disetujui = (clone $entries)->where('status', 'disetujui')->count();
+        $disetujui = (clone $entries)->where('status', 'APPROVED')->count();
 
         return (int) round(($disetujui / $total) * 100);
     }

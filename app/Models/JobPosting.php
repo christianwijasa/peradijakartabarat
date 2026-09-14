@@ -7,21 +7,21 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class AdvokatPendamping extends Model
+class JobPosting extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'law_firm_id',
-        'user_id',
-        'nama',
-        'kta_nomor',
-        'kta_aktif',
-        'pengalaman_tahun',
+        'title',
+        'description',
+        'practice_areas',
+        'quota',
+        'status',
     ];
 
     protected $casts = [
-        'kta_aktif' => 'boolean',
+        'practice_areas' => 'array',
     ];
 
     public function lawFirm(): BelongsTo
@@ -29,13 +29,13 @@ class AdvokatPendamping extends Model
         return $this->belongsTo(LawFirm::class);
     }
 
-    public function user(): BelongsTo
+    public function internshipApplications(): HasMany
     {
-        return $this->belongsTo(User::class);
+        return $this->hasMany(InternshipApplication::class);
     }
 
-    public function calonAdvokats(): HasMany
+    public function slotTersisa(): int
     {
-        return $this->hasMany(CalonAdvokat::class);
+        return max(0, $this->quota - $this->internshipApplications()->where('status', 'ACCEPTED')->count());
     }
 }

@@ -6,26 +6,28 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class LogbookEntry extends Model
+class InternshipApplication extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'candidate_advocate_id',
-        'entry_date',
-        'activity_type',
-        'hours',
-        'description',
+        'job_posting_id',
         'status',
-        'revision_notes',
+        'applied_on',
     ];
 
     protected $casts = [
-        'entry_date' => 'date',
+        'applied_on' => 'date',
     ];
 
     public function candidateAdvocate(): BelongsTo
     {
         return $this->belongsTo(CandidateAdvocate::class);
+    }
+
+    public function jobPosting(): BelongsTo
+    {
+        return $this->belongsTo(JobPosting::class);
     }
 }

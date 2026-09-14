@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-class VerifikasiChecklist extends Model
+class VerificationChecklist extends Model
 {
     use HasFactory;
 

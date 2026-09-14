@@ -10,11 +10,11 @@ class BerkasController extends Controller
 {
     public function index(): View
     {
-        $ca = Auth::user()->calonAdvokat;
-        $berkas = $ca->berkasSumpahs;
-        $audit = $ca->auditAkhirs()->latest()->first();
-        $lulusAudit = $audit?->status === 'lulus_audit';
-        $semuaLengkap = $berkas->every(fn ($b) => $b->status === 'lengkap');
+        $ca = Auth::user()->candidateAdvocate;
+        $berkas = $ca->oathDocuments;
+        $audit = $ca->finalAudits()->latest()->first();
+        $lulusAudit = $audit?->status === 'PASSED';
+        $semuaLengkap = $berkas->every(fn ($b) => $b->status === 'COMPLETE');
 
         return view('calon.berkas', [
             'ca' => $ca,

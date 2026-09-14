@@ -10,18 +10,18 @@ class DashboardController extends Controller
 {
     public function index(): View
     {
-        $ca = Auth::user()->calonAdvokat()->with(['lawFirm', 'advokatPendamping'])->firstOrFail();
+        $ca = Auth::user()->candidateAdvocate()->with(['lawFirm', 'supervisingLawyer'])->firstOrFail();
 
-        $hasLamaran = $ca->lamarans()->exists();
+        $hasLamaran = $ca->internshipApplications()->exists();
         $ditempatkan = $ca->law_firm_id !== null;
-        $magangSelesai = $ditempatkan && $ca->bulanBerjalan() >= $ca->masa_magang_bulan;
-        $audit = $ca->auditAkhirs()->latest()->first();
-        $lulusAudit = $audit?->status === 'lulus_audit';
+        $magangSelesai = $ditempatkan && $ca->bulanBerjalan() >= $ca->internship_months;
+        $audit = $ca->finalAudits()->latest()->first();
+        $lulusAudit = $audit?->status === 'PASSED';
 
         $timeline = [
             ['n' => 1, 'label' => 'Registrasi & unggah sertifikat UPA', 'actor' => 'Calon Advokat', 'status' => 'Selesai'],
-            ['n' => 2, 'label' => 'Validasi kelulusan & keanggotaan', 'actor' => 'Admin DPC', 'status' => $ca->status_verifikasi === 'terverifikasi' ? 'Selesai' : 'Berjalan'],
-            ['n' => 6, 'label' => 'Pengajuan lamaran magang', 'actor' => 'Calon Advokat', 'status' => $hasLamaran ? 'Selesai' : ($ca->status_verifikasi === 'terverifikasi' ? 'Berjalan' : 'Terkunci')],
+            ['n' => 2, 'label' => 'Validasi kelulusan & keanggotaan', 'actor' => 'Admin DPC', 'status' => $ca->verification_status === 'VERIFIED' ? 'Selesai' : 'Berjalan'],
+            ['n' => 6, 'label' => 'Pengajuan lamaran magang', 'actor' => 'Calon Advokat', 'status' => $hasLamaran ? 'Selesai' : ($ca->verification_status === 'VERIFIED' ? 'Berjalan' : 'Terkunci')],
             ['n' => 8, 'label' => 'Penerbitan surat penerimaan', 'actor' => 'Law Firm', 'status' => $ditempatkan ? 'Selesai' : ($hasLamaran ? 'Berjalan' : 'Terkunci')],
             ['n' => 9, 'label' => 'Input logbook harian', 'actor' => 'Calon Advokat', 'status' => $magangSelesai ? 'Selesai' : ($ditempatkan ? 'Berjalan' : 'Terkunci')],
             ['n' => 10, 'label' => 'Review & tanda tangan logbook', 'actor' => 'Pendamping', 'status' => $magangSelesai ? 'Selesai' : ($ditempatkan ? 'Berjalan' : 'Terkunci')],
@@ -30,14 +30,14 @@ class DashboardController extends Controller
         ];
 
         $totalLog = $ca->logbookEntries()->count();
-        $disetujui = $ca->logbookEntries()->where('status', 'disetujui')->count();
+        $disetujui = $ca->logbookEntries()->where('status', 'APPROVED')->count();
         $kepatuhan = $totalLog > 0 ? (int) round(($disetujui / $totalLog) * 100) : 0;
 
         $stats = [
             ['value' => $totalLog, 'label' => 'Entri logbook tercatat'],
             ['value' => $kepatuhan.'%', 'label' => 'Kepatuhan pengisian'],
-            ['value' => $ca->logbookRekapBulanans()->where('status', 'ditandatangani')->count(), 'label' => 'Rekap bulanan ditandatangani'],
-            ['value' => $ca->logbookRekapBulanans()->where('status', 'menunggu_ttd')->count(), 'label' => 'Menunggu tanda tangan'],
+            ['value' => $ca->monthlyLogbookSummaries()->where('status', 'SIGNED')->count(), 'label' => 'Rekap bulanan ditandatangani'],
+            ['value' => $ca->monthlyLogbookSummaries()->where('status', 'PENDING_SIGNATURE')->count(), 'label' => 'Menunggu tanda tangan'],
         ];
 
         return view('calon.dashboard', [

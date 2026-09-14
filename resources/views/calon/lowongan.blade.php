@@ -3,7 +3,7 @@
     title="Cari lowongan magang"
     subtitle="Hanya kantor hukum terverifikasi Admin DPC dengan kuota bimbingan tersisa yang dapat menerima lamaran."
     :menu="\App\Support\SidebarMenu::calon('lowongan')"
-    :user-meta="Auth::user()->calonAdvokat->kode_ca.' · Alumni Lulus UPA'"
+    :user-meta="Auth::user()->candidateAdvocate->candidate_code.' · Alumni Lulus UPA'"
 >
     <form method="GET" class="flex flex-col md:flex-row gap-2.5">
         <input
@@ -22,26 +22,26 @@
     </form>
 
     <div class="flex flex-col gap-4">
-        @forelse ($lowongans as $lowongan)
-            @php $sudahMelamar = in_array($lowongan->law_firm_id, $lamaranFirmIds); @endphp
+        @forelse ($jobPostings as $jobPosting)
+            @php $sudahMelamar = in_array($jobPosting->law_firm_id, $internshipApplicationFirmIds); @endphp
             <x-card class="p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div class="min-w-0">
                     <div class="flex items-center gap-2 flex-wrap">
-                        <p class="font-serif text-lg text-[#0d2a5c]">{{ $lowongan->lawFirm->nama }}</p>
+                        <p class="font-serif text-lg text-[#0d2a5c]">{{ $jobPosting->lawFirm->name }}</p>
                         <x-tag variant="ok">Terverifikasi DPC</x-tag>
                     </div>
-                    <p class="text-sm font-medium mt-1">{{ $lowongan->judul }}</p>
-                    <p class="text-sm text-[#5b5d68] mt-1">{{ $lowongan->deskripsi }}</p>
+                    <p class="text-sm font-medium mt-1">{{ $jobPosting->title }}</p>
+                    <p class="text-sm text-[#5b5d68] mt-1">{{ $jobPosting->description }}</p>
                     <div class="flex gap-2 mt-3 flex-wrap">
-                        @foreach ($lowongan->bidang ?? [] as $b)
+                        @foreach ($jobPosting->practice_areas ?? [] as $b)
                             <x-tag variant="mute">{{ $b }}</x-tag>
                         @endforeach
                     </div>
                 </div>
                 <div class="text-right shrink-0">
-                    <p class="text-sm text-[#5b5d68]">Sisa slot <span class="font-semibold text-[#191a20]">{{ $lowongan->slotTersisa() }}</span></p>
-                    <p class="text-xs text-[#7a7d8b] mb-3">dari kuota {{ $lowongan->kuota }}</p>
-                    <form method="POST" action="{{ route('calon.lowongan.lamar', $lowongan) }}">
+                    <p class="text-sm text-[#5b5d68]">Sisa slot <span class="font-semibold text-[#191a20]">{{ $jobPosting->slotTersisa() }}</span></p>
+                    <p class="text-xs text-[#7a7d8b] mb-3">dari kuota {{ $jobPosting->quota }}</p>
+                    <form method="POST" action="{{ route('calon.lowongan.lamar', $jobPosting) }}">
                         @csrf
                         <x-btn :variant="$sudahMelamar ? 'done' : 'primary'" :disabled="$sudahMelamar">
                             {{ $sudahMelamar ? 'Lamaran terkirim' : 'Ajukan lamaran' }}

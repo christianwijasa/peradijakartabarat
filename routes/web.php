@@ -33,7 +33,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'role:calon_advokat'])->prefix('calon')->name('calon.')->group(function () {
     Route::get('/dashboard', [CalonDashboardController::class, 'index'])->name('dashboard');
     Route::get('/lowongan', [LowonganController::class, 'index'])->name('lowongan');
-    Route::post('/lowongan/{lowongan}/lamar', [LowonganController::class, 'lamar'])->name('lowongan.lamar');
+    Route::post('/lowongan/{jobPosting}/lamar', [LowonganController::class, 'lamar'])->name('lowongan.lamar');
     Route::get('/lamaran', [LamaranController::class, 'index'])->name('lamaran');
     Route::get('/logbook', [LogbookController::class, 'index'])->name('logbook');
     Route::post('/logbook', [LogbookController::class, 'store'])->name('logbook.store');
@@ -43,16 +43,16 @@ Route::middleware(['auth', 'role:calon_advokat'])->prefix('calon')->name('calon.
 Route::middleware(['auth', 'role:law_firm'])->prefix('firm')->name('firm.')->group(function () {
     Route::get('/dashboard', [FirmDashboardController::class, 'index'])->name('dashboard');
     Route::get('/pelamar', [PelamarController::class, 'index'])->name('pelamar');
-    Route::post('/pelamar/{lamaran}/terima', [PelamarController::class, 'terima'])->name('pelamar.terima');
+    Route::post('/pelamar/{internshipApplication}/terima', [PelamarController::class, 'terima'])->name('pelamar.terima');
     Route::get('/logbook', [FirmLogbookController::class, 'index'])->name('logbook');
     Route::post('/logbook/{entry}/setujui', [FirmLogbookController::class, 'setujui'])->name('logbook.setujui');
     Route::post('/logbook/{entry}/revisi', [FirmLogbookController::class, 'revisi'])->name('logbook.revisi');
-    Route::post('/logbook/rekap/{rekap}/tandatangani-semua', [FirmLogbookController::class, 'tandatanganiSemua'])->name('logbook.tandatangani-semua');
+    Route::post('/logbook/rekap/{monthlyLogbookSummary}/tandatangani-semua', [FirmLogbookController::class, 'tandatanganiSemua'])->name('logbook.tandatangani-semua');
 });
 
 Route::middleware(['auth', 'role:admin_dpc'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/verifikasi', [AdminVerifikasiController::class, 'index'])->name('verifikasi');
-    Route::post('/verifikasi/calon/{calonAdvokat}/setujui', [AdminVerifikasiController::class, 'setujuiCalon'])->name('verifikasi.calon.setujui');
+    Route::post('/verifikasi/calon/{candidateAdvocate}/setujui', [AdminVerifikasiController::class, 'setujuiCalon'])->name('verifikasi.calon.setujui');
     Route::post('/verifikasi/firm/{lawFirm}/tetapkan-kuota', [AdminVerifikasiController::class, 'tetapkanKuotaFirm'])->name('verifikasi.firm.tetapkan-kuota');
     Route::get('/monitoring', [AdminMonitoringController::class, 'index'])->name('monitoring');
 });

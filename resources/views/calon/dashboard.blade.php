@@ -1,20 +1,20 @@
 <x-layout
     crumb="Calon Advokat"
     title="Beranda pemagang"
-    subtitle="Ringkasan masa magang {{ $ca->masa_magang_bulan }} bulan, penempatan, dan posisi kamu dalam alur magang."
+    subtitle="Ringkasan masa magang {{ $ca->internship_months }} bulan, penempatan, dan posisi kamu dalam alur magang."
     :menu="\App\Support\SidebarMenu::calon('dashboard')"
-    :user-meta="$ca->kode_ca.' · Alumni Lulus UPA'"
+    :user-meta="$ca->candidate_code.' · Alumni Lulus UPA'"
 >
     <x-card class="p-6">
         <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
             <div>
                 <p class="text-[11px] tracking-[0.14em] uppercase text-[#7a7d8b]">Masa magang berjalan</p>
                 <p class="mt-1 text-4xl font-serif text-[#0d2a5c]">
-                    {{ $ca->bulanBerjalan() }} <span class="text-lg text-[#7a7d8b] font-sans">dari {{ $ca->masa_magang_bulan }} bulan</span>
+                    {{ $ca->bulanBerjalan() }} <span class="text-lg text-[#7a7d8b] font-sans">dari {{ $ca->internship_months }} bulan</span>
                 </p>
             </div>
             <div class="text-sm text-right text-[#5b5d68] space-y-1">
-                <p>Mulai {{ $ca->tanggal_mulai_magang?->translatedFormat('j F Y') ?? '—' }}</p>
+                <p>Mulai {{ $ca->internship_started_on?->translatedFormat('j F Y') ?? '—' }}</p>
                 <p>Estimasi selesai {{ $ca->estimasiSelesai()?->translatedFormat('j F Y') ?? '—' }}</p>
             </div>
         </div>
@@ -63,14 +63,14 @@
             <x-card class="p-6">
                 <h2 class="font-semibold text-[15px]">Penempatan magang</h2>
                 @if ($ca->lawFirm)
-                    <p class="mt-3 font-serif text-lg text-[#0d2a5c]">{{ $ca->lawFirm->nama }}</p>
-                    <p class="text-sm text-[#5b5d68] mt-0.5">{{ $ca->bidang_penempatan }}</p>
-                    <p class="text-sm text-[#5b5d68]">{{ $ca->lawFirm->alamat }}</p>
-                    @if ($ca->advokatPendamping)
+                    <p class="mt-3 font-serif text-lg text-[#0d2a5c]">{{ $ca->lawFirm->name }}</p>
+                    <p class="text-sm text-[#5b5d68] mt-0.5">{{ $ca->placement_area }}</p>
+                    <p class="text-sm text-[#5b5d68]">{{ $ca->lawFirm->address }}</p>
+                    @if ($ca->supervisingLawyer)
                         <div class="border-t border-[#eceef2] mt-4 pt-4">
                             <p class="text-xs text-[#7a7d8b]">Advokat pendamping</p>
-                            <p class="text-sm font-medium mt-1">{{ $ca->advokatPendamping->nama }}</p>
-                            <p class="text-xs text-[#7a7d8b]">Pengalaman praktik {{ $ca->advokatPendamping->pengalaman_tahun }} tahun · KTA {{ $ca->advokatPendamping->kta_aktif ? 'aktif' : 'nonaktif' }}</p>
+                            <p class="text-sm font-medium mt-1">{{ $ca->supervisingLawyer->name }}</p>
+                            <p class="text-xs text-[#7a7d8b]">Pengalaman praktik {{ $ca->supervisingLawyer->years_of_experience }} tahun · KTA {{ $ca->supervisingLawyer->bar_membership_active ? 'aktif' : 'nonaktif' }}</p>
                         </div>
                     @endif
                 @else

@@ -6,23 +6,23 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class AuditAkhir extends Model
+class FinalAudit extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'calon_advokat_id',
+        'candidate_advocate_id',
         'status',
-        'catatan',
-        'tanggal_audit',
+        'notes',
+        'audited_at',
     ];
 
     protected $casts = [
-        'tanggal_audit' => 'datetime',
+        'audited_at' => 'datetime',
     ];
 
-    public function calonAdvokat(): BelongsTo
+    public function candidateAdvocate(): BelongsTo
     {
-        return $this->belongsTo(CalonAdvokat::class);
+        return $this->belongsTo(CandidateAdvocate::class);
     }
 }

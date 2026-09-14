@@ -1,7 +1,7 @@
 @php
     $alertDot = ['warn' => 'bg-[#b8862f]', 'bad' => 'bg-[#c2492f]', 'info' => 'bg-[#2a4d78]'];
-    $auditVariant = ['lulus_audit' => 'ok', 'dalam_proses' => 'wait', 'berkas_kurang' => 'bad'];
-    $auditLabel = ['lulus_audit' => 'Lulus audit', 'dalam_proses' => 'Dalam proses', 'berkas_kurang' => 'Berkas kurang'];
+    $auditVariant = ['PASSED' => 'ok', 'IN_PROGRESS' => 'wait', 'INCOMPLETE_DOCUMENTS' => 'bad'];
+    $auditLabel = ['PASSED' => 'Lulus audit', 'IN_PROGRESS' => 'Dalam proses', 'INCOMPLETE_DOCUMENTS' => 'Berkas kurang'];
 @endphp
 <x-layout
     crumb="Admin DPC Jakarta Barat"
@@ -21,7 +21,7 @@
                     $color = $row['pct'] >= 85 ? '#3f7a5c' : ($row['pct'] >= 60 ? '#b8862f' : '#c2492f');
                 @endphp
                 <div class="flex items-center gap-4">
-                    <p class="w-44 shrink-0 text-sm truncate">{{ $row['firm']->nama }}</p>
+                    <p class="w-44 shrink-0 text-sm truncate">{{ $row['firm']->name }}</p>
                     <div class="flex-1 h-2 rounded-full bg-[#eceef2] overflow-hidden">
                         <div class="h-full rounded-full" style="width: {{ $row['pct'] }}%; background: {{ $color }};"></div>
                     </div>
@@ -41,7 +41,7 @@
                     <div class="flex items-start gap-3 py-3">
                         <span class="w-2 h-2 rounded-full mt-1.5 shrink-0 {{ $alertDot[$a['variant']] }}"></span>
                         <div>
-                            <p class="text-sm font-medium">{{ $a['judul'] }}</p>
+                            <p class="text-sm font-medium">{{ $a['title'] }}</p>
                             <p class="text-xs text-[#7a7d8b] mt-0.5">{{ $a['detail'] }}</p>
                         </div>
                     </div>

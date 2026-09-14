@@ -14,11 +14,6 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'email',
@@ -26,37 +21,27 @@ class User extends Authenticatable
         'role',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
 
-    public function calonAdvokat(): HasOne
+    public function candidateAdvocate(): HasOne
     {
-        return $this->hasOne(CalonAdvokat::class);
+        return $this->hasOne(CandidateAdvocate::class);
     }
 
-    public function advokatPendamping(): HasOne
+    public function supervisingLawyer(): HasOne
     {
-        return $this->hasOne(AdvokatPendamping::class);
+        return $this->hasOne(SupervisingLawyer::class);
     }
 
-    public function isCalonAdvokat(): bool
+    public function isCandidateAdvocate(): bool
     {
         return $this->role === 'calon_advokat';
     }

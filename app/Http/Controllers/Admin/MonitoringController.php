@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\CalonAdvokat;
+use App\Models\CandidateAdvocate;
 use App\Models\LawFirm;
 use Illuminate\View\View;
 
@@ -11,7 +11,7 @@ class MonitoringController extends Controller
 {
     public function index(): View
     {
-        $kepatuhan = LawFirm::where('status_verifikasi', 'terverifikasi')
+        $kepatuhan = LawFirm::where('verification_status', 'VERIFIED')
             ->get()
             ->map(fn ($firm) => [
                 'firm' => $firm,
@@ -22,20 +22,20 @@ class MonitoringController extends Controller
 
         $alerts = [];
 
-        $firmPenuh = LawFirm::where('status_verifikasi', 'terverifikasi')->get()
-            ->first(fn ($f) => $f->kuota_maks > 0 && $f->kuotaTerpakai() / $f->kuota_maks >= 0.9);
+        $firmPenuh = LawFirm::where('verification_status', 'VERIFIED')->get()
+            ->first(fn ($f) => $f->max_quota > 0 && $f->kuotaTerpakai() / $f->max_quota >= 0.9);
         if ($firmPenuh) {
             $alerts[] = [
-                'judul' => 'Kuota gabungan hampir penuh',
-                'detail' => $firmPenuh->nama.': '.$firmPenuh->kuotaTerpakai().' dari '.$firmPenuh->kuota_maks.' slot terpakai.',
+                'title' => 'Kuota gabungan hampir penuh',
+                'detail' => $firmPenuh->name.': '.$firmPenuh->kuotaTerpakai().' dari '.$firmPenuh->max_quota.' slot terpakai.',
                 'variant' => 'warn',
             ];
         }
 
-        $telat = CalonAdvokat::where('status_keanggotaan', 'aktif')->whereNotNull('law_firm_id')->with(['user', 'lawFirm'])->get()
+        $telat = CandidateAdvocate::where('membership_status', 'ACTIVE')->whereNotNull('law_firm_id')->with(['user', 'lawFirm'])->get()
             ->map(function ($ca) {
-                $last = $ca->logbookEntries()->latest('tanggal')->first();
-                $days = $last ? $last->tanggal->diffInDays(now()) : ($ca->tanggal_mulai_magang?->diffInDays(now()) ?? 0);
+                $last = $ca->logbookEntries()->latest('entry_date')->first();
+                $days = $last ? $last->entry_date->diffInDays(now()) : ($ca->internship_started_on?->diffInDays(now()) ?? 0);
 
                 return ['ca' => $ca, 'days' => $days];
             })
@@ -43,33 +43,33 @@ class MonitoringController extends Controller
             ->first(fn ($row) => $row['days'] >= 14);
         if ($telat) {
             $alerts[] = [
-                'judul' => 'Logbook tidak diisi '.$telat['days'].' hari',
-                'detail' => $telat['ca']->user->name.' — '.($telat['ca']->lawFirm->nama ?? '-').'.',
+                'title' => 'Logbook tidak diisi '.$telat['days'].' hari',
+                'detail' => $telat['ca']->user->name.' — '.($telat['ca']->lawFirm->name ?? '-').'.',
                 'variant' => 'bad',
             ];
         }
 
-        $mendekati = CalonAdvokat::where('status_keanggotaan', 'aktif')->whereNotNull('law_firm_id')->with(['user', 'lawFirm'])->get()
-            ->first(fn ($ca) => $ca->masa_magang_bulan - $ca->bulanBerjalan() <= 2 && $ca->masa_magang_bulan - $ca->bulanBerjalan() > 0);
+        $mendekati = CandidateAdvocate::where('membership_status', 'ACTIVE')->whereNotNull('law_firm_id')->with(['user', 'lawFirm'])->get()
+            ->first(fn ($ca) => $ca->internship_months - $ca->bulanBerjalan() <= 2 && $ca->internship_months - $ca->bulanBerjalan() > 0);
         if ($mendekati) {
-            $sisa = $mendekati->masa_magang_bulan - $mendekati->bulanBerjalan();
+            $sisa = $mendekati->internship_months - $mendekati->bulanBerjalan();
             $alerts[] = [
-                'judul' => 'Masa magang mendekati '.$mendekati->masa_magang_bulan.' bulan',
+                'title' => 'Masa magang mendekati '.$mendekati->internship_months.' bulan',
                 'detail' => $mendekati->user->name.' — sisa '.$sisa.' bulan, berkas mulai disiapkan.',
                 'variant' => 'info',
             ];
         }
 
-        $auditList = CalonAdvokat::whereNotNull('law_firm_id')
-            ->with(['user', 'auditAkhirs' => fn ($q) => $q->latest()])
+        $auditList = CandidateAdvocate::whereNotNull('law_firm_id')
+            ->with(['user', 'finalAudits' => fn ($q) => $q->latest()])
             ->get()
-            ->filter(fn ($ca) => $ca->bulanBerjalan() >= $ca->masa_magang_bulan - 2)
+            ->filter(fn ($ca) => $ca->bulanBerjalan() >= $ca->internship_months - 2)
             ->map(function ($ca) {
-                $audit = $ca->auditAkhirs->first();
-                $rekapBelumTtd = $ca->logbookRekapBulanans()->where('status', '!=', 'ditandatangani')->count();
-                $status = $audit?->status ?? 'dalam_proses';
-                $detail = $ca->bulanBerjalan().'/'.$ca->masa_magang_bulan.' bulan';
-                $detail .= $rekapBelumTtd > 0 ? ' · '.$rekapBelumTtd.' rekap belum ditandatangani' : ' · logbook lengkap';
+                $audit = $ca->finalAudits->first();
+                $monthlyLogbookSummaryBelumTtd = $ca->monthlyLogbookSummaries()->where('status', '!=', 'SIGNED')->count();
+                $status = $audit?->status ?? 'IN_PROGRESS';
+                $detail = $ca->bulanBerjalan().'/'.$ca->internship_months.' bulan';
+                $detail .= $monthlyLogbookSummaryBelumTtd > 0 ? ' · '.$monthlyLogbookSummaryBelumTtd.' rekap belum ditandatangani' : ' · logbook lengkap';
 
                 return ['ca' => $ca, 'status' => $status, 'detail' => $detail];
             })

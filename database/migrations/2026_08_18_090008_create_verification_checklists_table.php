@@ -6,12 +6,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('verifikasi_checklists', function (Blueprint $table) {
+        Schema::create('verification_checklists', function (Blueprint $table) {
             $table->id();
             $table->morphs('checkable');
             $table->string('label');
@@ -20,11 +17,8 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('verifikasi_checklists');
+        Schema::dropIfExists('verification_checklists');
     }
 };

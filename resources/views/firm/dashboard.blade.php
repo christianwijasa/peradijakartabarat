@@ -1,22 +1,22 @@
 <x-layout
-    crumb="Law Firm · {{ $firm->nama }}"
+    crumb="Law Firm · {{ $firm->name }}"
     title="Dashboard & kuota bimbingan"
     subtitle="Pantau kuota gabungan kantor dan advokat pendamping, serta progres seluruh pemagang."
     :menu="\App\Support\SidebarMenu::firm('dashboard')"
-    :user-meta="'Advokat Pendamping · '.$firm->nama"
+    :user-meta="'Advokat Pendamping · '.$firm->name"
 >
     <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-5 items-start">
         <x-card class="p-6">
             <p class="text-[11px] tracking-[0.14em] uppercase text-[#7a7d8b]">Kuota bimbingan gabungan</p>
             <p class="mt-1 text-4xl font-serif text-[#0d2a5c]">
-                {{ $kuotaTerpakai }} <span class="text-lg text-[#7a7d8b] font-sans">/ {{ $firm->kuota_maks }} calon advokat</span>
+                {{ $kuotaTerpakai }} <span class="text-lg text-[#7a7d8b] font-sans">/ {{ $firm->max_quota }} calon advokat</span>
             </p>
             <div class="mt-4 flex gap-1.5">
                 @foreach ($kuotaSlots as $filled)
                     <div class="flex-1 h-[30px] rounded-md {{ $filled ? 'bg-primary' : 'bg-[#edeef2]' }}"></div>
                 @endforeach
             </div>
-            <p class="text-sm text-[#7a7d8b] mt-4">Hard-cap Peraturan PERADI No. 1/2015: maksimum {{ $firm->kuota_maks }} calon advokat dalam waktu bersamaan untuk kantor + advokat pendamping.</p>
+            <p class="text-sm text-[#7a7d8b] mt-4">Hard-cap Peraturan PERADI No. 1/2015: maksimum {{ $firm->max_quota }} calon advokat dalam waktu bersamaan untuk kantor + advokat pendamping.</p>
         </x-card>
 
         <x-card class="p-6">
@@ -55,14 +55,14 @@
                     <tr>
                         <td class="px-6 py-4">
                             <p class="font-medium">{{ $row['ca']->user->name }}</p>
-                            <p class="text-xs text-[#7a7d8b]">{{ $row['ca']->kode_ca }}</p>
+                            <p class="text-xs text-[#7a7d8b]">{{ $row['ca']->candidate_code }}</p>
                         </td>
-                        <td class="px-6 py-4 text-[#5b5d68]">{{ $row['ca']->bidang_penempatan }}</td>
+                        <td class="px-6 py-4 text-[#5b5d68]">{{ $row['ca']->placement_area }}</td>
                         <td class="px-6 py-4">
                             <div class="w-32 h-1.5 rounded-full bg-[#eceef2] overflow-hidden">
                                 <div class="h-full bg-primary" style="width: {{ $row['ca']->progresPersen() }}%"></div>
                             </div>
-                            <p class="text-xs text-[#7a7d8b] mt-1">bulan {{ $row['ca']->bulanBerjalan() }}/{{ $row['ca']->masa_magang_bulan }}</p>
+                            <p class="text-xs text-[#7a7d8b] mt-1">bulan {{ $row['ca']->bulanBerjalan() }}/{{ $row['ca']->internship_months }}</p>
                         </td>
                         <td class="px-6 py-4"><x-tag :variant="$row['variant']">{{ $row['logStatus'] }}</x-tag></td>
                     </tr>

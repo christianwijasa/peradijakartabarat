@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\CalonAdvokat;
+use App\Models\CandidateAdvocate;
 use App\Models\LawFirm;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,19 +16,19 @@ class VerifikasiController extends Controller
         $tab = $request->query('tab', 'calon');
         $tab = in_array($tab, ['calon', 'firm'], true) ? $tab : 'calon';
 
-        $queueCalon = CalonAdvokat::whereIn('status_verifikasi', ['menunggu', 'perlu_perbaikan'])
+        $queueCalon = CandidateAdvocate::whereIn('verification_status', ['PENDING', 'NEEDS_CORRECTION'])
             ->with(['user', 'checklistItems'])
             ->get();
 
-        $queueFirm = LawFirm::whereIn('status_verifikasi', ['menunggu', 'perlu_perbaikan'])
+        $queueFirm = LawFirm::whereIn('verification_status', ['PENDING', 'NEEDS_CORRECTION'])
             ->with('checklistItems')
             ->get();
 
         $stats = [
             ['value' => (string) ($queueCalon->count() + $queueFirm->count()), 'label' => 'Menunggu verifikasi'],
-            ['value' => (string) CalonAdvokat::where('status_keanggotaan', 'aktif')->count(), 'label' => 'Alumni lulus UPA aktif'],
-            ['value' => (string) LawFirm::where('status_verifikasi', 'terverifikasi')->count(), 'label' => 'Kantor hukum terverifikasi'],
-            ['value' => (string) LawFirm::where('status_verifikasi', 'terverifikasi')->get()->sum(fn ($f) => $f->kuotaTersisa()), 'label' => 'Slot bimbingan tersedia'],
+            ['value' => (string) CandidateAdvocate::where('membership_status', 'ACTIVE')->count(), 'label' => 'Alumni lulus UPA aktif'],
+            ['value' => (string) LawFirm::where('verification_status', 'VERIFIED')->count(), 'label' => 'Kantor hukum terverifikasi'],
+            ['value' => (string) LawFirm::where('verification_status', 'VERIFIED')->get()->sum(fn ($f) => $f->kuotaTersisa()), 'label' => 'Slot bimbingan tersedia'],
         ];
 
         return view('admin.verifikasi', [
@@ -39,19 +39,19 @@ class VerifikasiController extends Controller
         ]);
     }
 
-    public function setujuiCalon(CalonAdvokat $calonAdvokat): RedirectResponse
+    public function setujuiCalon(CandidateAdvocate $candidateAdvocate): RedirectResponse
     {
-        $calonAdvokat->update(['status_verifikasi' => 'terverifikasi']);
-        $calonAdvokat->checklistItems()->update(['is_checked' => true]);
+        $candidateAdvocate->update(['verification_status' => 'VERIFIED']);
+        $candidateAdvocate->checklistItems()->update(['is_checked' => true]);
 
-        return back()->with('status', $calonAdvokat->user->name.' berhasil diverifikasi.');
+        return back()->with('status', $candidateAdvocate->user->name.' berhasil diverifikasi.');
     }
 
     public function tetapkanKuotaFirm(LawFirm $lawFirm): RedirectResponse
     {
-        $lawFirm->update(['status_verifikasi' => 'terverifikasi', 'diverifikasi_pada' => now()]);
+        $lawFirm->update(['verification_status' => 'VERIFIED', 'verified_at' => now()]);
         $lawFirm->checklistItems()->update(['is_checked' => true]);
 
-        return back()->with('status', 'Kuota bimbingan '.$lawFirm->nama.' ditetapkan dan kantor terverifikasi.');
+        return back()->with('status', 'Kuota bimbingan '.$lawFirm->name.' ditetapkan dan kantor terverifikasi.');
     }
 }

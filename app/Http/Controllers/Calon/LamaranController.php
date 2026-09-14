@@ -10,12 +10,12 @@ class LamaranController extends Controller
 {
     public function index(): View
     {
-        $lamarans = Auth::user()->calonAdvokat
-            ->lamarans()
-            ->with(['lowongan.lawFirm'])
-            ->latest('tanggal_lamar')
+        $internshipApplications = Auth::user()->candidateAdvocate
+            ->internshipApplications()
+            ->with(['jobPosting.lawFirm'])
+            ->latest('applied_on')
             ->get();
 
-        return view('calon.lamaran', ['lamarans' => $lamarans]);
+        return view('calon.lamaran', ['lamarans' => $internshipApplications]);
     }
 }

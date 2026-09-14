@@ -6,31 +6,25 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('berkas_sumpahs', function (Blueprint $table) {
+        Schema::create('oath_documents', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('calon_advokat_id')->constrained()->cascadeOnDelete();
-            $table->enum('jenis', [
+            $table->foreignId('candidate_advocate_id')->constrained()->cascadeOnDelete();
+            $table->enum('document_type', [
                 'sertifikat_pkpa', 'sertifikat_lulus_upa', 'ijazah_transkrip',
                 'rekap_logbook', 'sertifikat_selesai_magang', 'surat_rekomendasi_dpc',
             ]);
-            $table->string('sumber')->nullable();
-            $table->enum('status', ['lengkap', 'berjalan', 'menunggu'])->default('menunggu');
+            $table->string('source_label')->nullable();
+            $table->enum('status', ['COMPLETE', 'IN_PROGRESS', 'PENDING'])->default('PENDING');
             $table->string('file_path')->nullable();
-            $table->string('ukuran')->nullable();
+            $table->string('file_size_label')->nullable();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('berkas_sumpahs');
+        Schema::dropIfExists('oath_documents');
     }
 };

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Firm;
 
 use App\Http\Controllers\Controller;
 use App\Models\LogbookEntry;
-use App\Models\LogbookRekapBulanan;
+use App\Models\MonthlyLogbookSummary;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,28 +14,28 @@ class LogbookController extends Controller
 {
     public function index(Request $request): View
     {
-        $pendamping = Auth::user()->advokatPendamping;
-        $calonList = $pendamping->calonAdvokats()->with('user')->get();
+        $pendamping = Auth::user()->supervisingLawyer;
+        $calonList = $pendamping->candidateAdvocates()->with('user')->get();
 
         $selectedId = $request->query('calon');
         $selected = $selectedId
             ? $calonList->firstWhere('id', (int) $selectedId)
-            : $calonList->first(fn ($ca) => $ca->logbookEntries()->where('status', 'menunggu_ttd')->exists());
+            : $calonList->first(fn ($ca) => $ca->logbookEntries()->where('status', 'PENDING_SIGNATURE')->exists());
         $selected ??= $calonList->first();
 
         $entries = collect();
-        $rekap = null;
+        $monthlyLogbookSummary = null;
         if ($selected) {
             $now = now();
             $entries = $selected->logbookEntries()
-                ->whereYear('tanggal', $now->year)
-                ->whereMonth('tanggal', $now->month)
-                ->orderByDesc('tanggal')
+                ->whereYear('entry_date', $now->year)
+                ->whereMonth('entry_date', $now->month)
+                ->orderByDesc('entry_date')
                 ->get();
 
-            $rekap = LogbookRekapBulanan::firstOrCreate(
-                ['calon_advokat_id' => $selected->id, 'bulan' => $now->month, 'tahun' => $now->year],
-                ['status' => 'berjalan']
+            $monthlyLogbookSummary = MonthlyLogbookSummary::firstOrCreate(
+                ['candidate_advocate_id' => $selected->id, 'month' => $now->month, 'year' => $now->year],
+                ['status' => 'IN_PROGRESS']
             );
         }
 
@@ -44,7 +44,7 @@ class LogbookController extends Controller
             'calonList' => $calonList,
             'selected' => $selected,
             'entries' => $entries,
-            'rekap' => $rekap,
+            'rekap' => $monthlyLogbookSummary,
             'bulanLabel' => now()->translatedFormat('F Y'),
         ]);
     }
@@ -52,7 +52,7 @@ class LogbookController extends Controller
     public function setujui(LogbookEntry $entry): RedirectResponse
     {
         $this->authorizeEntry($entry);
-        $entry->update(['status' => 'disetujui', 'catatan_revisi' => null]);
+        $entry->update(['status' => 'APPROVED', 'revision_notes' => null]);
 
         return back()->with('status', 'Entri logbook disetujui.');
     }
@@ -60,27 +60,27 @@ class LogbookController extends Controller
     public function revisi(Request $request, LogbookEntry $entry): RedirectResponse
     {
         $this->authorizeEntry($entry);
-        $data = $request->validate(['catatan_revisi' => ['nullable', 'string', 'max:500']]);
-        $entry->update(['status' => 'revisi', 'catatan_revisi' => $data['catatan_revisi'] ?? 'Perlu direvisi oleh calon advokat.']);
+        $data = $request->validate(['revision_notes' => ['nullable', 'string', 'max:500']]);
+        $entry->update(['status' => 'REVISION', 'revision_notes' => $data['revision_notes'] ?? 'Perlu direvisi oleh calon advokat.']);
 
         return back()->with('status', 'Entri logbook dikembalikan untuk revisi.');
     }
 
-    public function tandatanganiSemua(LogbookRekapBulanan $rekap): RedirectResponse
+    public function tandatanganiSemua(MonthlyLogbookSummary $monthlyLogbookSummary): RedirectResponse
     {
-        $pendamping = Auth::user()->advokatPendamping;
-        abort_unless($rekap->calonAdvokat->advokat_pendamping_id === $pendamping->id, 403);
+        $pendamping = Auth::user()->supervisingLawyer;
+        abort_unless($monthlyLogbookSummary->candidateAdvocate->supervising_lawyer_id === $pendamping->id, 403);
 
-        $rekap->calonAdvokat->logbookEntries()
-            ->whereYear('tanggal', $rekap->tahun)
-            ->whereMonth('tanggal', $rekap->bulan)
-            ->whereIn('status', ['menunggu_ttd', 'revisi'])
-            ->update(['status' => 'disetujui', 'catatan_revisi' => null]);
+        $monthlyLogbookSummary->candidateAdvocate->logbookEntries()
+            ->whereYear('entry_date', $monthlyLogbookSummary->year)
+            ->whereMonth('entry_date', $monthlyLogbookSummary->month)
+            ->whereIn('status', ['PENDING_SIGNATURE', 'REVISION'])
+            ->update(['status' => 'APPROVED', 'revision_notes' => null]);
 
-        $rekap->update([
-            'status' => 'ditandatangani',
-            'ditandatangani_oleh' => $pendamping->id,
-            'tanggal_ttd' => now(),
+        $monthlyLogbookSummary->update([
+            'status' => 'SIGNED',
+            'signed_by_supervising_lawyer_id' => $pendamping->id,
+            'signed_at' => now(),
         ]);
 
         return back()->with('status', 'Seluruh entri disetujui dan rekap bulanan ditandatangani.');
@@ -88,7 +88,7 @@ class LogbookController extends Controller
 
     private function authorizeEntry(LogbookEntry $entry): void
     {
-        $pendamping = Auth::user()->advokatPendamping;
-        abort_unless($entry->calonAdvokat->advokat_pendamping_id === $pendamping->id, 403);
+        $pendamping = Auth::user()->supervisingLawyer;
+        abort_unless($entry->candidateAdvocate->supervising_lawyer_id === $pendamping->id, 403);
     }
 }

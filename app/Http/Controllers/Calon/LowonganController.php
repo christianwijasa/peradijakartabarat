@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Calon;
 
 use App\Http\Controllers\Controller;
-use App\Models\Lowongan;
+use App\Models\JobPosting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,45 +13,45 @@ class LowonganController extends Controller
 {
     public function index(Request $request): View
     {
-        $ca = Auth::user()->calonAdvokat;
+        $ca = Auth::user()->candidateAdvocate;
 
         $bidangFilter = ['Semua bidang', 'Litigasi', 'Korporasi', 'Prodeo'];
         $filter = in_array($request->query('bidang'), $bidangFilter, true) ? $request->query('bidang') : 'Semua bidang';
 
-        $lowongans = Lowongan::query()
-            ->where('status', 'aktif')
-            ->whereHas('lawFirm', fn ($q) => $q->where('status_verifikasi', 'terverifikasi'))
+        $jobPostings = JobPosting::query()
+            ->where('status', 'ACTIVE')
+            ->whereHas('lawFirm', fn ($q) => $q->where('verification_status', 'VERIFIED'))
             ->with('lawFirm')
-            ->when($filter !== 'Semua bidang', fn ($q) => $q->whereJsonContains('bidang', $filter))
+            ->when($filter !== 'Semua bidang', fn ($q) => $q->whereJsonContains('practice_areas', $filter))
             ->when($request->query('q'), fn ($q, $keyword) => $q->where(function ($q) use ($keyword) {
-                $q->where('judul', 'like', "%{$keyword}%")
-                    ->orWhereHas('lawFirm', fn ($q) => $q->where('nama', 'like', "%{$keyword}%"));
+                $q->where('title', 'like', "%{$keyword}%")
+                    ->orWhereHas('lawFirm', fn ($q) => $q->where('name', 'like', "%{$keyword}%"));
             }))
             ->get();
 
-        $lamaranFirmIds = $ca->lamarans()->with('lowongan')->get()->pluck('lowongan.law_firm_id')->filter()->all();
+        $internshipApplicationFirmIds = $ca->internshipApplications()->with('jobPosting')->get()->pluck('jobPosting.law_firm_id')->filter()->all();
 
         return view('calon.lowongan', [
-            'lowongans' => $lowongans,
+            'jobPostings' => $jobPostings,
             'bidangFilter' => $bidangFilter,
             'filter' => $filter,
-            'lamaranFirmIds' => $lamaranFirmIds,
+            'internshipApplicationFirmIds' => $internshipApplicationFirmIds,
             'keyword' => $request->query('q'),
         ]);
     }
 
-    public function lamar(Lowongan $lowongan): RedirectResponse
+    public function lamar(JobPosting $jobPosting): RedirectResponse
     {
-        $ca = Auth::user()->calonAdvokat;
+        $ca = Auth::user()->candidateAdvocate;
 
-        if (! $ca->lamarans()->where('lowongan_id', $lowongan->id)->exists()) {
-            $ca->lamarans()->create([
-                'lowongan_id' => $lowongan->id,
-                'status' => 'terkirim',
-                'tanggal_lamar' => now(),
+        if (! $ca->internshipApplications()->where('job_posting_id', $jobPosting->id)->exists()) {
+            $ca->internshipApplications()->create([
+                'job_posting_id' => $jobPosting->id,
+                'status' => 'SUBMITTED',
+                'applied_on' => now(),
             ]);
         }
 
-        return back()->with('status', 'Lamaran berhasil dikirim ke '.$lowongan->lawFirm->nama.'.');
+        return back()->with('status', 'Lamaran berhasil dikirim ke '.$jobPosting->lawFirm->name.'.');
     }
 }

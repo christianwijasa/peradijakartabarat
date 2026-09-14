@@ -35,7 +35,7 @@
                     <div class="flex flex-col md:flex-row md:items-center gap-4 px-6 py-5">
                         <div class="md:w-64 shrink-0">
                             <p class="font-medium">{{ $ca->user->name }}</p>
-                            <p class="text-xs text-[#7a7d8b] mt-0.5">NIK {{ $ca->nik ? substr($ca->nik, 0, 4).'••••' : '—' }} · UPA {{ $ca->upa_gelombang }}</p>
+                            <p class="text-xs text-[#7a7d8b] mt-0.5">NIK {{ $ca->national_id_number ? substr($ca->national_id_number, 0, 4).'••••' : '—' }} · UPA {{ $ca->bar_exam_cohort }}</p>
                         </div>
                         <div class="flex-1 flex flex-col gap-1.5">
                             @foreach ($ca->checklistItems as $item)
@@ -63,8 +63,8 @@
                     @endphp
                     <div class="flex flex-col md:flex-row md:items-center gap-4 px-6 py-5">
                         <div class="md:w-64 shrink-0">
-                            <p class="font-medium">{{ $firm->nama }}</p>
-                            <p class="text-xs text-[#7a7d8b] mt-0.5">{{ $firm->sk_kemenkumham ?? 'SK Kemenkumham —' }} · {{ $firm->advokatPendampings()->count() }} advokat pendamping</p>
+                            <p class="font-medium">{{ $firm->name }}</p>
+                            <p class="text-xs text-[#7a7d8b] mt-0.5">{{ $firm->ministry_registration_number ?? 'SK Kemenkumham —' }} · {{ $firm->supervisingLawyers()->count() }} advokat pendamping</p>
                         </div>
                         <div class="flex-1 flex flex-col gap-1.5">
                             @foreach ($firm->checklistItems as $item)

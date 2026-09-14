@@ -19,14 +19,14 @@
 
         <div class="mt-4">
             <x-input-label for="nik" value="NIK" />
-            <x-text-input id="nik" class="block mt-1 w-full" type="text" name="nik" :value="old('nik')" autocomplete="off" />
-            <x-input-error :messages="$errors->get('nik')" class="mt-2" />
+            <x-text-input id="nik" class="block mt-1 w-full" type="text" name="national_id_number" :value="old('national_id_number')" autocomplete="off" />
+            <x-input-error :messages="$errors->get('national_id_number')" class="mt-2" />
         </div>
 
         <div class="mt-4">
             <x-input-label for="universitas" value="Universitas" />
-            <x-text-input id="universitas" class="block mt-1 w-full" type="text" name="universitas" :value="old('universitas')" autocomplete="off" />
-            <x-input-error :messages="$errors->get('universitas')" class="mt-2" />
+            <x-text-input id="universitas" class="block mt-1 w-full" type="text" name="university" :value="old('university')" autocomplete="off" />
+            <x-input-error :messages="$errors->get('university')" class="mt-2" />
         </div>
 
         <div class="mt-4">

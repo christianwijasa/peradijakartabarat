@@ -6,28 +6,22 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('advokat_pendampings', function (Blueprint $table) {
+        Schema::create('supervising_lawyers', function (Blueprint $table) {
             $table->id();
             $table->foreignId('law_firm_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
-            $table->string('nama');
-            $table->string('kta_nomor')->nullable();
-            $table->boolean('kta_aktif')->default(true);
-            $table->unsignedInteger('pengalaman_tahun')->default(0);
+            $table->string('name');
+            $table->string('bar_membership_number')->nullable();
+            $table->boolean('bar_membership_active')->default(true);
+            $table->unsignedInteger('years_of_experience')->default(0);
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('advokat_pendampings');
+        Schema::dropIfExists('supervising_lawyers');
     }
 };

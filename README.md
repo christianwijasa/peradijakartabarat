@@ -50,4 +50,4 @@ Registrasi mandiri (`/register`) tersedia untuk peran Calon Advokat. Akun Law Fi
 
 ## Struktur data inti
 
-`LawFirm`, `AdvokatPendamping`, `CalonAdvokat`, `Lowongan`, `Lamaran`, `LogbookEntry`, `LogbookRekapBulanan`, `VerifikasiChecklist`, `BerkasSumpah`, `AuditAkhir` — lihat `database/migrations` dan `app/Models`.
+`LawFirm`, `SupervisingLawyer`, `CandidateAdvocate`, `JobPosting`, `InternshipApplication`, `LogbookEntry`, `MonthlyLogbookSummary`, `VerificationChecklist`, `OathDocument`, `FinalAudit` — lihat `database/migrations` dan `app/Models`.
