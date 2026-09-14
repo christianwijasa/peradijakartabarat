@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Firm;
 
 use App\Http\Controllers\Controller;
+use App\Models\CandidateAdvocate;
 use App\Models\LogbookEntry;
 use App\Models\MonthlyLogbookSummary;
+use App\Models\SupervisingLawyer;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,7 +17,7 @@ class LogbookController extends Controller
     public function index(Request $request): View
     {
         $pendamping = Auth::user()->supervisingLawyer;
-        $calonList = $pendamping->candidateAdvocates()->with('user')->get();
+        $calonList = $pendamping->lawFirm->candidateAdvocates()->with('user')->get();
 
         $selectedId = $request->query('calon');
         $selected = $selectedId
@@ -69,7 +71,7 @@ class LogbookController extends Controller
     public function tandatanganiSemua(MonthlyLogbookSummary $monthlyLogbookSummary): RedirectResponse
     {
         $pendamping = Auth::user()->supervisingLawyer;
-        abort_unless($monthlyLogbookSummary->candidateAdvocate->supervising_lawyer_id === $pendamping->id, 403);
+        $this->authorizeCandidate($monthlyLogbookSummary->candidateAdvocate, $pendamping);
 
         $monthlyLogbookSummary->candidateAdvocate->logbookEntries()
             ->whereYear('entry_date', $monthlyLogbookSummary->year)
@@ -89,6 +91,16 @@ class LogbookController extends Controller
     private function authorizeEntry(LogbookEntry $entry): void
     {
         $pendamping = Auth::user()->supervisingLawyer;
-        abort_unless($entry->candidateAdvocate->supervising_lawyer_id === $pendamping->id, 403);
+        $this->authorizeCandidate($entry->candidateAdvocate, $pendamping);
+    }
+
+    private function authorizeCandidate(?CandidateAdvocate $candidate, ?SupervisingLawyer $pendamping): void
+    {
+        abort_if($pendamping === null || $candidate === null, 403);
+
+        abort_unless(
+            (int) $candidate->law_firm_id === (int) $pendamping->law_firm_id,
+            403
+        );
     }
 }
