@@ -36,13 +36,10 @@ class CalonAdvokat extends Model
         'masa_magang_bulan',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'tanggal_mulai_magang' => 'date',
-            'ipk' => 'decimal:2',
-        ];
-    }
+    protected $casts = [
+        'tanggal_mulai_magang' => 'date',
+        'ipk' => 'decimal:2',
+    ];
 
     public function user(): BelongsTo
     {

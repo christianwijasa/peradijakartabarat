@@ -20,12 +20,9 @@ class Lowongan extends Model
         'status',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'bidang' => 'array',
-        ];
-    }
+    protected $casts = [
+        'bidang' => 'array',
+    ];
 
     public function lawFirm(): BelongsTo
     {

@@ -17,12 +17,9 @@ class Lamaran extends Model
         'tanggal_lamar',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'tanggal_lamar' => 'date',
-        ];
-    }
+    protected $casts = [
+        'tanggal_lamar' => 'date',
+    ];
 
     public function calonAdvokat(): BelongsTo
     {

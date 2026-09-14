@@ -17,12 +17,9 @@ class AuditAkhir extends Model
         'tanggal_audit',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'tanggal_audit' => 'datetime',
-        ];
-    }
+    protected $casts = [
+        'tanggal_audit' => 'datetime',
+    ];
 
     public function calonAdvokat(): BelongsTo
     {

@@ -7,7 +7,6 @@ use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Queue\Factory as QueueManager;
 use Illuminate\Database\DetectsLostConnections;
-use Illuminate\Queue\Events\JobAttempted;
 use Illuminate\Queue\Events\JobExceptionOccurred;
 use Illuminate\Queue\Events\JobPopped;
 use Illuminate\Queue\Events\JobPopping;
@@ -85,13 +84,6 @@ class Worker
     public $shouldQuit = false;
 
     /**
-     * Indicates if the worker lost its connection.
-     *
-     * @var bool
-     */
-    public $lostConnection = false;
-
-    /**
      * Indicates if the worker is paused.
      *
      * @var bool
@@ -115,13 +107,12 @@ class Worker
      * @param  callable|null  $resetScope
      * @return void
      */
-    public function __construct(
-        QueueManager $manager,
-        Dispatcher $events,
-        ExceptionHandler $exceptions,
-        callable $isDownForMaintenance,
-        ?callable $resetScope = null,
-    ) {
+    public function __construct(QueueManager $manager,
+                                Dispatcher $events,
+                                ExceptionHandler $exceptions,
+                                callable $isDownForMaintenance,
+                                ?callable $resetScope = null)
+    {
         $this->events = $events;
         $this->manager = $manager;
         $this->exceptions = $exceptions;
@@ -145,21 +136,17 @@ class Worker
 
         $lastRestart = $this->getTimestampOfLastQueueRestart();
 
-        [$startTime, $jobsProcessed] = [$this->currentTime(), 0];
-
-        $lastJobProcessedAt = $startTime;
+        [$startTime, $jobsProcessed] = [hrtime(true) / 1e9, 0];
 
         while (true) {
             // Before reserving any jobs, we will make sure this queue is not paused and
             // if it is we will just pause this worker for a given amount of time and
             // make sure we do not need to kill this worker process off completely.
             if (! $this->daemonShouldRun($options, $connectionName, $queue)) {
-                [$status, $reason] = $this->pauseWorker(
-                    $options, $lastRestart, $startTime, $jobsProcessed, $lastJobProcessedAt
-                );
+                $status = $this->pauseWorker($options, $lastRestart);
 
                 if (! is_null($status)) {
-                    return $this->stop($status, $options, $reason);
+                    return $this->stop($status, $options);
                 }
 
                 continue;
@@ -188,8 +175,6 @@ class Worker
 
                 $this->runJob($job, $connectionName, $options);
 
-                $lastJobProcessedAt = $this->currentTime();
-
                 if ($options->rest > 0) {
                     $this->sleep($options->rest);
                 }
@@ -204,12 +189,12 @@ class Worker
             // Finally, we will check to see if we have exceeded our memory limits or if
             // the queue should restart based on other indications. If so, we'll stop
             // this worker and let whatever is "monitoring" it restart the process.
-            [$status, $reason] = $this->stopIfNecessary(
-                $options, $lastRestart, $startTime, $jobsProcessed, $job, $lastJobProcessedAt
+            $status = $this->stopIfNecessary(
+                $options, $lastRestart, $startTime, $jobsProcessed, $job
             );
 
             if (! is_null($status)) {
-                return $this->stop($status, $options, $reason);
+                return $this->stop($status, $options);
             }
         }
     }
@@ -245,7 +230,7 @@ class Worker
                 ));
             }
 
-            $this->kill(static::EXIT_ERROR, $options, WorkerStopReason::TimedOut);
+            $this->kill(static::EXIT_ERROR, $options);
         }, true);
 
         pcntl_alarm(
@@ -295,16 +280,13 @@ class Worker
      *
      * @param  \Illuminate\Queue\WorkerOptions  $options
      * @param  int  $lastRestart
-     * @param  int|float  $startTime
-     * @param  int  $jobsProcessed
-     * @param  int|float|null  $lastJobProcessedAt
-     * @return array|null
+     * @return int|null
      */
-    protected function pauseWorker(WorkerOptions $options, $lastRestart, $startTime = 0, $jobsProcessed = 0, $lastJobProcessedAt = null)
+    protected function pauseWorker(WorkerOptions $options, $lastRestart)
     {
         $this->sleep($options->sleep > 0 ? $options->sleep : 1);
 
-        return $this->stopIfNecessary($options, $lastRestart, $startTime, $jobsProcessed, null, $lastJobProcessedAt);
+        return $this->stopIfNecessary($options, $lastRestart);
     }
 
     /**
@@ -315,20 +297,17 @@ class Worker
      * @param  int  $startTime
      * @param  int  $jobsProcessed
      * @param  mixed  $job
-     * @param  int|float|null  $lastJobProcessedAt
-     * @return array|null
+     * @return int|null
      */
-    protected function stopIfNecessary(WorkerOptions $options, $lastRestart, $startTime = 0, $jobsProcessed = 0, $job = null, $lastJobProcessedAt = null)
+    protected function stopIfNecessary(WorkerOptions $options, $lastRestart, $startTime = 0, $jobsProcessed = 0, $job = null)
     {
         return match (true) {
-            $this->lostConnection => [static::EXIT_SUCCESS, WorkerStopReason::LostConnection],
-            $this->shouldQuit => [static::EXIT_SUCCESS, WorkerStopReason::Interrupted],
-            $this->memoryExceeded($options->memory) => [static::EXIT_MEMORY_LIMIT, WorkerStopReason::MaxMemoryExceeded],
-            $this->queueShouldRestart($lastRestart) => [static::EXIT_SUCCESS, WorkerStopReason::ReceivedRestartSignal],
-            $options->stopWhenEmpty && is_null($job) => [static::EXIT_SUCCESS, WorkerStopReason::QueueEmpty],
-            $options->stopWhenEmptyFor && is_null($job) && $this->currentTime() - ($lastJobProcessedAt ?? $startTime) >= $options->stopWhenEmptyFor => [static::EXIT_SUCCESS, WorkerStopReason::QueueEmptyFor],
-            $options->maxTime && $this->currentTime() - $startTime >= $options->maxTime => [static::EXIT_SUCCESS, WorkerStopReason::MaxTimeExceeded],
-            $options->maxJobs && $jobsProcessed >= $options->maxJobs => [static::EXIT_SUCCESS, WorkerStopReason::MaxJobsExceeded],
+            $this->shouldQuit => static::EXIT_SUCCESS,
+            $this->memoryExceeded($options->memory) => static::EXIT_MEMORY_LIMIT,
+            $this->queueShouldRestart($lastRestart) => static::EXIT_SUCCESS,
+            $options->stopWhenEmpty && is_null($job) => static::EXIT_SUCCESS,
+            $options->maxTime && hrtime(true) / 1e9 - $startTime >= $options->maxTime => static::EXIT_SUCCESS,
+            $options->maxJobs && $jobsProcessed >= $options->maxJobs => static::EXIT_SUCCESS,
             default => null
         };
     }
@@ -366,23 +345,22 @@ class Worker
      */
     protected function getNextJob($connection, $queue)
     {
-        $popJobCallback = function ($queue, $index = 0) use ($connection) {
-            return $connection->pop($queue, $index);
+        $popJobCallback = function ($queue) use ($connection) {
+            return $connection->pop($queue);
         };
 
         $this->raiseBeforeJobPopEvent($connection->getConnectionName());
 
         try {
             if (isset(static::$popCallbacks[$this->name])) {
-                if (! is_null($job = (static::$popCallbacks[$this->name])($popJobCallback, $queue))) {
-                    $this->raiseAfterJobPopEvent($connection->getConnectionName(), $job);
-                }
-
-                return $job;
+                return tap(
+                    (static::$popCallbacks[$this->name])($popJobCallback, $queue),
+                    fn ($job) => $this->raiseAfterJobPopEvent($connection->getConnectionName(), $job)
+                );
             }
 
-            foreach (explode(',', $queue) as $index => $queue) {
-                if (! is_null($job = $popJobCallback($queue, $index))) {
+            foreach (explode(',', $queue) as $queue) {
+                if (! is_null($job = $popJobCallback($queue))) {
                     $this->raiseAfterJobPopEvent($connection->getConnectionName(), $job);
 
                     return $job;
@@ -425,7 +403,7 @@ class Worker
     protected function stopWorkerIfLostConnection($e)
     {
         if ($this->causedByLostConnection($e)) {
-            $this->lostConnection = true;
+            $this->shouldQuit = true;
         }
     }
 
@@ -462,13 +440,7 @@ class Worker
 
             $this->raiseAfterJobEvent($connectionName, $job);
         } catch (Throwable $e) {
-            $exceptionOccurred = true;
-
             $this->handleJobException($connectionName, $job, $options, $e);
-        } finally {
-            $this->events->dispatch(new JobAttempted(
-                $connectionName, $job, $exceptionOccurred ?? false
-            ));
         }
     }
 
@@ -775,12 +747,11 @@ class Worker
      *
      * @param  int  $status
      * @param  WorkerOptions|null  $options
-     * @param  WorkerStopReason|null  $reason
      * @return int
      */
-    public function stop($status = 0, $options = null, $reason = null)
+    public function stop($status = 0, $options = null)
     {
-        $this->events->dispatch(new WorkerStopping($status, $options, $reason));
+        $this->events->dispatch(new WorkerStopping($status, $options));
 
         return $status;
     }
@@ -790,12 +761,11 @@ class Worker
      *
      * @param  int  $status
      * @param  \Illuminate\Queue\WorkerOptions|null  $options
-     * @param  \Illuminate\Queue\WorkerStopReason|null  $reason
      * @return never
      */
-    public function kill($status = 0, $options = null, $reason = null)
+    public function kill($status = 0, $options = null)
     {
-        $this->events->dispatch(new WorkerStopping($status, $options, $reason));
+        $this->events->dispatch(new WorkerStopping($status, $options));
 
         if (extension_loaded('posix')) {
             posix_kill(getmypid(), SIGKILL);
@@ -902,15 +872,5 @@ class Worker
     public function setManager(QueueManager $manager)
     {
         $this->manager = $manager;
-    }
-
-    /**
-     * Get the current high-resolution timestamp.
-     *
-     * @return float
-     */
-    protected function currentTime()
-    {
-        return hrtime(true) / 1e9;
     }
 }

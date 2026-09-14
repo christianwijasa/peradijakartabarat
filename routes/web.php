@@ -14,6 +14,10 @@ use App\Http\Controllers\Firm\PelamarController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/up', function () {
+    return response()->noContent();
+});
+
 Route::get('/', function () {
     return auth()->check() ? redirect()->route('dashboard') : redirect()->route('login');
 });

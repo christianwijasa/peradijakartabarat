@@ -106,15 +106,11 @@ class UnicodeString extends AbstractUnicodeString
             return false;
         }
 
-        if (false === $grapheme = grapheme_extract($this->string, \strlen($suffix), \GRAPHEME_EXTR_MAXBYTES, \strlen($this->string) - \strlen($suffix))) {
-            $grapheme = '';
-        }
-
         if ($this->ignoreCase) {
-            return 0 === mb_stripos($grapheme, $suffix, 0, 'UTF-8');
+            return 0 === mb_stripos(grapheme_extract($this->string, \strlen($suffix), \GRAPHEME_EXTR_MAXBYTES, \strlen($this->string) - \strlen($suffix)), $suffix, 0, 'UTF-8');
         }
 
-        return $suffix === $grapheme;
+        return $suffix === grapheme_extract($this->string, \strlen($suffix), \GRAPHEME_EXTR_MAXBYTES, \strlen($this->string) - \strlen($suffix));
     }
 
     public function equalsTo(string|iterable|AbstractString $string): bool
@@ -272,9 +268,6 @@ class UnicodeString extends AbstractUnicodeString
         return $str;
     }
 
-    /**
-     * @param-immediately-invoked-callable $to
-     */
     public function replaceMatches(string $fromRegexp, string|callable $to): static
     {
         $str = parent::replaceMatches($fromRegexp, $to);
@@ -366,15 +359,11 @@ class UnicodeString extends AbstractUnicodeString
             return false;
         }
 
-        if (false === $grapheme = grapheme_extract($this->string, \strlen($prefix), \GRAPHEME_EXTR_MAXBYTES)) {
-            $grapheme = '';
-        }
-
         if ($this->ignoreCase) {
-            return 0 === mb_stripos($grapheme, $prefix, 0, 'UTF-8');
+            return 0 === mb_stripos(grapheme_extract($this->string, \strlen($prefix), \GRAPHEME_EXTR_MAXBYTES), $prefix, 0, 'UTF-8');
         }
 
-        return $prefix === $grapheme;
+        return $prefix === grapheme_extract($this->string, \strlen($prefix), \GRAPHEME_EXTR_MAXBYTES);
     }
 
     public function trimPrefix($prefix): static
@@ -415,14 +404,11 @@ class UnicodeString extends AbstractUnicodeString
         return parent::trimSuffix($suffix);
     }
 
-    public function __unserialize(array $data): void
+    /**
+     * @return void
+     */
+    public function __wakeup()
     {
-        if (($data['string'] ?? null) instanceof \Stringable || ($data["\0*\0string"] ?? null) instanceof \Stringable) {
-            throw new \BadMethodCallException('Cannot unserialize '.__CLASS__);
-        }
-
-        $this->string = $data['string'] ?? $data["\0*\0string"];
-
         if (!\is_string($this->string)) {
             throw new \BadMethodCallException('Cannot unserialize '.__CLASS__);
         }

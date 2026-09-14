@@ -18,9 +18,11 @@ use Symfony\Component\HttpFoundation\Session\Storage\Handler\StrictSessionHandle
  */
 class SessionHandlerProxy extends AbstractProxy implements \SessionHandlerInterface, \SessionUpdateTimestampHandlerInterface
 {
-    public function __construct(
-        protected \SessionHandlerInterface $handler,
-    ) {
+    protected $handler;
+
+    public function __construct(\SessionHandlerInterface $handler)
+    {
+        $this->handler = $handler;
         $this->wrapper = $handler instanceof \SessionHandler;
         $this->saveHandlerName = $this->wrapper || ($handler instanceof StrictSessionHandler && $handler->isWrapper()) ? \ini_get('session.save_handler') : 'user';
     }
@@ -60,6 +62,14 @@ class SessionHandlerProxy extends AbstractProxy implements \SessionHandlerInterf
     public function gc(int $maxlifetime): int|false
     {
         return $this->handler->gc($maxlifetime);
+    }
+
+    /**
+     * @return string
+     */
+    public function create_sid()
+    {
+        return session_create_id() ?: throw new \RuntimeException('Unable to create a session ID.');
     }
 
     public function validateId(#[\SensitiveParameter] string $sessionId): bool

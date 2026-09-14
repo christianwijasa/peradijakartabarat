@@ -19,12 +19,9 @@ class LogbookRekapBulanan extends Model
         'tanggal_ttd',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'tanggal_ttd' => 'datetime',
-        ];
-    }
+    protected $casts = [
+        'tanggal_ttd' => 'datetime',
+    ];
 
     public function calonAdvokat(): BelongsTo
     {

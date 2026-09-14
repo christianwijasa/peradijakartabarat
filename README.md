@@ -1,6 +1,6 @@
 # Kantong Magang Advokat — DPC PERADI Jakarta Barat
 
-Platform web untuk mengelola program magang wajib 24 bulan bagi calon advokat (alumni lulus UPA) di bawah DPC PERADI Jakarta Barat, dibangun dari mockup `Platform_Magang_Fase_1`. Dibangun dengan **Laravel 11** dan **MySQL**.
+Platform web untuk mengelola program magang wajib 24 bulan bagi calon advokat (alumni lulus UPA) di bawah DPC PERADI Jakarta Barat, dibangun dari mockup `Platform_Magang_Fase_1`. Dibangun dengan **Laravel 10** dan **MySQL** (PHP **8.1+**).
 
 ## Peran pengguna
 

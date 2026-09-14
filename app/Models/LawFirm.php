@@ -21,13 +21,10 @@ class LawFirm extends Model
         'diverifikasi_pada',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'setara_kantor_advokat' => 'boolean',
-            'diverifikasi_pada' => 'datetime',
-        ];
-    }
+    protected $casts = [
+        'setara_kantor_advokat' => 'boolean',
+        'diverifikasi_pada' => 'datetime',
+    ];
 
     public function advokatPendampings(): HasMany
     {

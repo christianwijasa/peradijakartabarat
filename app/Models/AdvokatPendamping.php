@@ -20,12 +20,9 @@ class AdvokatPendamping extends Model
         'pengalaman_tahun',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'kta_aktif' => 'boolean',
-        ];
-    }
+    protected $casts = [
+        'kta_aktif' => 'boolean',
+    ];
 
     public function lawFirm(): BelongsTo
     {

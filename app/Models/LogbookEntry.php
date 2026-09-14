@@ -20,12 +20,9 @@ class LogbookEntry extends Model
         'catatan_revisi',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'tanggal' => 'date',
-        ];
-    }
+    protected $casts = [
+        'tanggal' => 'date',
+    ];
 
     public function calonAdvokat(): BelongsTo
     {

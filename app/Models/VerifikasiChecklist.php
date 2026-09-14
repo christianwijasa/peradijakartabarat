@@ -17,12 +17,9 @@ class VerifikasiChecklist extends Model
         'is_checked',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'is_checked' => 'boolean',
-        ];
-    }
+    protected $casts = [
+        'is_checked' => 'boolean',
+    ];
 
     public function checkable(): MorphTo
     {
