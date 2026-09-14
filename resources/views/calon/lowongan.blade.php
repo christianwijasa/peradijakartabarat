@@ -5,17 +5,17 @@
     :menu="\App\Support\SidebarMenu::calon('lowongan')"
     :user-meta="Auth::user()->candidateAdvocate->candidate_code.' · Alumni Lulus UPA'"
 >
-    <form method="GET" class="flex flex-col md:flex-row gap-2.5">
+    <form method="GET" class="flex flex-col gap-3">
         <input
             type="text" name="q" value="{{ $keyword }}" placeholder="Cari kantor hukum atau kata kunci"
-            class="flex-1 rounded-lg border-[#e0e2e9] text-sm focus:border-primary focus:ring-primary"
+            class="app-input flex-1"
         >
-        <div class="flex gap-2 overflow-x-auto">
+        <div class="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 snap-x snap-mandatory">
             @foreach ($bidangFilter as $label)
                 <button
                     type="submit" name="bidang" value="{{ $label }}"
-                    class="rounded-lg px-3.5 py-2 text-[12.5px] whitespace-nowrap border shrink-0
-                        {{ $filter === $label ? 'border-primary bg-[#eef3fb] text-primary' : 'border-[#e0e2e9] bg-white text-[#4a4c57]' }}"
+                    class="snap-start rounded-xl min-h-[40px] px-3.5 py-2 text-[13px] whitespace-nowrap border shrink-0 transition
+                        {{ $filter === $label ? 'border-primary bg-tag-info-bg text-primary font-medium shadow-sm' : 'border-line bg-white text-ink-secondary hover:bg-muted' }}"
                 >{{ $label }}</button>
             @endforeach
         </div>

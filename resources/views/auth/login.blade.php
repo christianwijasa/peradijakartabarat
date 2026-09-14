@@ -1,37 +1,37 @@
 <x-guest-layout>
-    <h1 class="font-serif text-xl text-[#0d2a5c] mb-1">Masuk</h1>
-    <p class="text-sm text-[#7a7d8b] mb-5">Masuk sesuai peran: calon advokat, law firm, atau admin DPC.</p>
+    <h1 class="font-serif text-xl text-navy mb-1">Masuk</h1>
+    <p class="text-sm text-muted-foreground mb-6 leading-relaxed">Masuk sesuai peran: calon advokat, law firm, atau admin DPC.</p>
 
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <form method="POST" action="{{ route('login') }}">
+    <form method="POST" action="{{ route('login') }}" class="space-y-5">
         @csrf
 
         <div>
             <x-input-label for="email" value="Email" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
+            <x-text-input id="email" class="block mt-1.5 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
-        <div class="mt-4">
+        <div>
             <x-input-label for="password" value="Kata sandi" />
-            <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="current-password" />
+            <x-text-input id="password" class="block mt-1.5 w-full" type="password" name="password" required autocomplete="current-password" />
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-primary shadow-sm focus:ring-primary" name="remember">
-                <span class="ms-2 text-sm text-[#5b5d68]">Ingat saya</span>
+        <div>
+            <label for="remember_me" class="inline-flex min-h-[44px] items-center gap-2 sm:min-h-0">
+                <input id="remember_me" type="checkbox" class="rounded-md border-line text-primary shadow-sm focus:ring-primary/30" name="remember">
+                <span class="text-sm text-ink-secondary">Ingat saya</span>
             </label>
         </div>
 
-        <div class="flex items-center justify-between mt-5">
-            <a class="text-sm text-[#5b5d68] hover:text-[#191a20] underline underline-offset-2" href="{{ route('register') }}">
+        <div class="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 pt-1">
+            <a class="text-sm text-center sm:text-left text-muted-foreground hover:text-ink underline underline-offset-2" href="{{ route('register') }}">
                 Belum punya akun?
             </a>
 
-            <x-primary-button>
+            <x-primary-button class="w-full sm:w-auto justify-center">
                 Masuk
             </x-primary-button>
         </div>

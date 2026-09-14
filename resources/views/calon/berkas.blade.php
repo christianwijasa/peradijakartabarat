@@ -11,40 +11,42 @@
 >
     <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-5 items-start">
         <x-card class="overflow-hidden">
-            <div class="p-6 border-b border-[#eceef2]">
-                <h2 class="font-semibold text-[15px]">Paket berkas sumpah advokat</h2>
-                <p class="text-sm text-[#7a7d8b] mt-1">Digabung otomatis dari data admisi (PKPA/UPA) dan logbook magang.</p>
+            <div class="p-5 md:p-6 border-b border-line">
+                <h2 class="app-section-title">Paket berkas sumpah advokat</h2>
+                <p class="text-sm text-muted-foreground mt-1 leading-relaxed">Digabung otomatis dari data admisi (PKPA/UPA) dan logbook magang.</p>
             </div>
-            <div class="divide-y divide-[#eceef2]">
+            <div class="divide-y divide-line">
                 @foreach ($berkas as $b)
-                    <div class="flex items-center justify-between gap-4 px-6 py-4">
-                        <div>
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-5 md:px-6 py-4">
+                        <div class="min-w-0">
                             <p class="text-sm font-medium">{{ $b->label() }}</p>
-                            <p class="text-xs text-[#7a7d8b] mt-0.5">{{ $b->source_label }}</p>
+                            <p class="text-xs text-muted-foreground mt-0.5">{{ $b->source_label }}</p>
                         </div>
-                        <div class="flex items-center gap-4 shrink-0">
+                        <div class="flex items-center justify-between sm:justify-end gap-3 shrink-0">
                             <x-tag :variant="$tagVariant[$b->status]">{{ $tagLabel[$b->status] }}</x-tag>
-                            <span class="text-sm text-[#7a7d8b] w-14 text-right">{{ $b->file_size_label ?? '—' }}</span>
+                            <span class="text-sm text-muted-foreground tabular-nums">{{ $b->file_size_label ?? '—' }}</span>
                         </div>
                     </div>
                 @endforeach
             </div>
         </x-card>
 
-        <div class="bg-[#0d2a5c] text-white rounded-xl p-6">
-            <p class="text-[11px] tracking-[0.14em] uppercase text-[#aec1e4]">Status audit akhir</p>
-            <p class="mt-2 font-serif text-xl">
-                {{ $bisaUnduh ? 'Paket siap diunduh' : 'Terkunci hingga bulan ke-'.$ca->internship_months }}
-            </p>
-            <p class="text-sm text-[#aec1e4] mt-2 leading-relaxed">
-                Unduhan paket terbuka setelah sertifikat selesai magang diterbitkan kantor hukum dan audit Admin DPC dinyatakan lulus.
-            </p>
-            <button
-                @disabled(! $bisaUnduh)
-                class="mt-5 w-full rounded-lg border border-white/30 py-2.5 text-sm {{ $bisaUnduh ? 'bg-white text-navy font-medium hover:bg-[#f1f4fa]' : 'text-white/80 cursor-not-allowed' }}"
-            >
-                {{ $bisaUnduh ? 'Unduh paket' : 'Unduh paket (belum tersedia)' }}
-            </button>
-        </div>
+        <x-navy-callout
+            eyebrow="Status audit akhir"
+            :title="$bisaUnduh ? 'Paket siap diunduh' : 'Terkunci hingga bulan ke-'.$ca->internship_months"
+            description="Unduhan paket terbuka setelah sertifikat selesai magang diterbitkan kantor hukum dan audit Admin DPC dinyatakan lulus."
+        >
+            <x-slot:actions>
+                <button
+                    type="button"
+                    @disabled(! $bisaUnduh)
+                    @class([
+                        $bisaUnduh ? 'app-btn-on-navy-enabled' : 'app-btn-on-navy-disabled',
+                    ])
+                >
+                    {{ $bisaUnduh ? 'Unduh paket' : 'Unduh paket (belum tersedia)' }}
+                </button>
+            </x-slot:actions>
+        </x-navy-callout>
     </div>
 </x-layout>

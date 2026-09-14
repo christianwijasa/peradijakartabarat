@@ -42,7 +42,7 @@
                 @csrf
                 <div>
                     <label class="text-xs text-[#7a7d8b]">Jenis kegiatan</label>
-                    <select name="activity_type" class="mt-1 w-full rounded-lg border-[#e0e2e9] text-sm focus:border-primary focus:ring-primary">
+                    <select name="activity_type" class="mt-1.5 app-select">
                         <option>Riset hukum</option>
                         <option>Pendampingan sidang</option>
                         <option>Drafting dokumen</option>
@@ -50,15 +50,15 @@
                     </select>
                 </div>
                 <div>
-                    <label class="text-xs text-[#7a7d8b]">Uraian kegiatan</label>
+                    <label class="app-label-xs">Uraian kegiatan</label>
                     <textarea name="description" rows="5" required placeholder="Contoh: Riset yurisprudensi terkait actio pauliana untuk perkara No. 55/Pdt.Sus-PKPU."
-                        class="mt-1 w-full rounded-lg border-[#e0e2e9] text-sm focus:border-primary focus:ring-primary">{{ old('description') }}</textarea>
+                        class="mt-1.5 app-input min-h-[120px]">{{ old('description') }}</textarea>
                     @error('description') <p class="text-xs text-tag-bad-fg mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="text-xs text-[#7a7d8b]">Durasi (jam)</label>
+                    <label class="app-label-xs">Durasi (jam)</label>
                     <input type="number" step="0.5" min="0.5" max="24" name="hours" value="4"
-                        class="mt-1 w-full rounded-lg border-[#e0e2e9] text-sm focus:border-primary focus:ring-primary">
+                        class="mt-1.5 app-input">
                 </div>
                 <x-btn type="submit" class="w-full justify-center">Kirim ke pendamping</x-btn>
                 <p class="text-xs text-[#7a7d8b]">Catatan terkirim akan menunggu tanda tangan digital advokat pendamping pada rekap bulanan.</p>

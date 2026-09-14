@@ -38,38 +38,71 @@
     </div>
 
     <x-card class="overflow-hidden">
-        <div class="p-6 border-b border-[#eceef2]">
-            <h2 class="font-semibold text-[15px]">Pemagang aktif</h2>
+        <div class="p-5 md:p-6 border-b border-line">
+            <h2 class="app-section-title">Pemagang aktif</h2>
         </div>
-        <table class="w-full text-sm">
-            <thead>
-                <tr class="text-left text-[11px] tracking-[0.1em] uppercase text-[#7a7d8b] bg-[#f7f8fa]">
-                    <th class="px-6 py-3 font-medium">Nama</th>
-                    <th class="px-6 py-3 font-medium">Bidang</th>
-                    <th class="px-6 py-3 font-medium">Progres</th>
-                    <th class="px-6 py-3 font-medium">Logbook bulan ini</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-[#eceef2]">
-                @forelse ($pemagang as $row)
+
+        <div class="md:hidden divide-y divide-line">
+            @forelse ($pemagang as $row)
+                <div class="p-5 space-y-3">
+                    <div>
+                        <p class="font-medium">{{ $row['ca']->user->name }}</p>
+                        <p class="text-xs text-muted-foreground">{{ $row['ca']->candidate_code }}</p>
+                    </div>
+                    <div class="flex items-center justify-between gap-3 text-sm">
+                        <span class="text-muted-foreground">Bidang</span>
+                        <span class="text-ink-secondary text-right">{{ $row['ca']->placement_area }}</span>
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
+                            <span>Progres magang</span>
+                            <span>bulan {{ $row['ca']->bulanBerjalan() }}/{{ $row['ca']->internship_months }}</span>
+                        </div>
+                        <div class="h-2 rounded-full bg-muted overflow-hidden">
+                            <div class="h-full bg-primary rounded-full" style="width: {{ $row['ca']->progresPersen() }}%"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-muted-foreground">Logbook bulan ini</span>
+                        <x-tag :variant="$row['variant']">{{ $row['logStatus'] }}</x-tag>
+                    </div>
+                </div>
+            @empty
+                <p class="p-8 text-center text-sm text-muted-foreground">Belum ada pemagang aktif.</p>
+            @endforelse
+        </div>
+
+        <div class="hidden md:block app-table-wrap">
+            <table class="app-table">
+                <thead>
                     <tr>
-                        <td class="px-6 py-4">
-                            <p class="font-medium">{{ $row['ca']->user->name }}</p>
-                            <p class="text-xs text-[#7a7d8b]">{{ $row['ca']->candidate_code }}</p>
-                        </td>
-                        <td class="px-6 py-4 text-[#5b5d68]">{{ $row['ca']->placement_area }}</td>
-                        <td class="px-6 py-4">
-                            <div class="w-32 h-1.5 rounded-full bg-[#eceef2] overflow-hidden">
-                                <div class="h-full bg-primary" style="width: {{ $row['ca']->progresPersen() }}%"></div>
-                            </div>
-                            <p class="text-xs text-[#7a7d8b] mt-1">bulan {{ $row['ca']->bulanBerjalan() }}/{{ $row['ca']->internship_months }}</p>
-                        </td>
-                        <td class="px-6 py-4"><x-tag :variant="$row['variant']">{{ $row['logStatus'] }}</x-tag></td>
+                        <th>Nama</th>
+                        <th>Bidang</th>
+                        <th>Progres</th>
+                        <th>Logbook bulan ini</th>
                     </tr>
-                @empty
-                    <tr><td colspan="4" class="px-6 py-8 text-center text-[#7a7d8b]">Belum ada pemagang aktif.</td></tr>
-                @endforelse
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @forelse ($pemagang as $row)
+                        <tr>
+                            <td>
+                                <p class="font-medium">{{ $row['ca']->user->name }}</p>
+                                <p class="text-xs text-muted-foreground">{{ $row['ca']->candidate_code }}</p>
+                            </td>
+                            <td class="text-ink-secondary">{{ $row['ca']->placement_area }}</td>
+                            <td>
+                                <div class="w-32 h-2 rounded-full bg-muted overflow-hidden">
+                                    <div class="h-full bg-primary rounded-full" style="width: {{ $row['ca']->progresPersen() }}%"></div>
+                                </div>
+                                <p class="text-xs text-muted-foreground mt-1">bulan {{ $row['ca']->bulanBerjalan() }}/{{ $row['ca']->internship_months }}</p>
+                            </td>
+                            <td><x-tag :variant="$row['variant']">{{ $row['logStatus'] }}</x-tag></td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="4" class="py-8 text-center text-muted-foreground">Belum ada pemagang aktif.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </x-card>
 </x-layout>

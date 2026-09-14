@@ -8,7 +8,7 @@
     @if ($calonList->count() > 1)
         <form method="GET" class="flex items-center gap-2">
             <label class="text-xs text-[#7a7d8b]">Pemagang</label>
-            <select name="calon" onchange="this.form.submit()" class="rounded-lg border-[#e0e2e9] text-sm focus:border-primary focus:ring-primary">
+            <select name="calon" onchange="this.form.submit()" class="app-select text-sm">
                 @foreach ($calonList as $ca)
                     <option value="{{ $ca->id }}" @selected($selected && $selected->id === $ca->id)>{{ $ca->user->name }} · {{ $ca->candidate_code }}</option>
                 @endforeach
@@ -27,20 +27,22 @@
                 </div>
                 <div class="mt-3 divide-y divide-[#eceef2]">
                     @forelse ($entries->where('status', '!=', 'APPROVED') as $e)
-                        <div class="py-4 flex items-start gap-4">
-                            <div class="w-14 shrink-0 text-xs text-[#7a7d8b] pt-0.5">{{ $e->entry_date->translatedFormat('j M') }}</div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-xs text-[#7a7d8b]">{{ $e->activity_type }} · {{ rtrim(rtrim(number_format($e->hours, 1), '0'), '.') }} jam</p>
-                                <p class="text-sm mt-1">{{ $e->description }}</p>
+                        <div class="py-4 flex flex-col sm:flex-row sm:items-start gap-4">
+                            <div class="flex gap-3 sm:block sm:w-14 shrink-0">
+                                <div class="text-xs text-muted-foreground sm:pt-0.5">{{ $e->entry_date->translatedFormat('j M') }}</div>
                             </div>
-                            <div class="flex items-center gap-2 shrink-0">
-                                <form method="POST" action="{{ route('firm.logbook.setujui', $e) }}">
+                            <div class="flex-1 min-w-0">
+                                <p class="text-xs text-muted-foreground">{{ $e->activity_type }} · {{ rtrim(rtrim(number_format($e->hours, 1), '0'), '.') }} jam</p>
+                                <p class="text-sm mt-1 leading-relaxed">{{ $e->description }}</p>
+                            </div>
+                            <div class="flex flex-col sm:flex-row gap-2 shrink-0 w-full sm:w-auto">
+                                <form method="POST" action="{{ route('firm.logbook.setujui', $e) }}" class="w-full sm:w-auto">
                                     @csrf
-                                    <x-btn class="!px-3 !py-1.5">Setujui</x-btn>
+                                    <x-btn class="w-full sm:w-auto !px-3 !py-2">Setujui</x-btn>
                                 </form>
-                                <form method="POST" action="{{ route('firm.logbook.revisi', $e) }}">
+                                <form method="POST" action="{{ route('firm.logbook.revisi', $e) }}" class="w-full sm:w-auto">
                                     @csrf
-                                    <x-btn variant="danger-outline" class="!px-3 !py-1.5">Revisi</x-btn>
+                                    <x-btn variant="danger-outline" class="w-full sm:w-auto !px-3 !py-2">Revisi</x-btn>
                                 </form>
                             </div>
                         </div>

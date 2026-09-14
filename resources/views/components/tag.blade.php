@@ -1,13 +1,13 @@
 @props(['variant' => 'mute'])
 @php
     $styles = [
-        'ok' => 'bg-tag-ok-bg text-tag-ok-fg',
-        'wait' => 'bg-tag-wait-bg text-tag-wait-fg',
-        'info' => 'bg-tag-info-bg text-tag-info-fg',
-        'bad' => 'bg-tag-bad-bg text-tag-bad-fg',
-        'mute' => 'bg-tag-mute-bg text-tag-mute-fg',
+        'ok' => 'bg-tag-ok-bg text-tag-ok-fg ring-1 ring-inset ring-tag-ok-fg/10',
+        'wait' => 'bg-tag-wait-bg text-tag-wait-fg ring-1 ring-inset ring-tag-wait-fg/10',
+        'info' => 'bg-tag-info-bg text-tag-info-fg ring-1 ring-inset ring-tag-info-fg/10',
+        'bad' => 'bg-tag-bad-bg text-tag-bad-fg ring-1 ring-inset ring-tag-bad-fg/10',
+        'mute' => 'bg-tag-mute-bg text-tag-mute-fg ring-1 ring-inset ring-black/5',
     ];
 @endphp
-<span {{ $attributes->merge(['class' => 'inline-block text-[11.5px] font-medium tracking-wide uppercase rounded-md px-2.5 py-1 whitespace-nowrap justify-self-start ' . ($styles[$variant] ?? $styles['mute'])]) }}>
+<span {{ $attributes->merge(['class' => 'inline-flex items-center text-[11px] font-semibold tracking-wide uppercase rounded-lg px-2.5 py-1 whitespace-nowrap ' . ($styles[$variant] ?? $styles['mute'])]) }}>
     {{ $slot }}
 </span>

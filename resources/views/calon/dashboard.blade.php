@@ -22,11 +22,11 @@
             <div class="h-full bg-primary rounded-full" style="width: {{ $ca->progresPersen() }}%"></div>
         </div>
 
-        <div class="mt-6 grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-[#eceef2] border-t border-[#eceef2] pt-5">
+        <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-0 md:divide-x border-t border-line pt-5">
             @foreach ($stats as $s)
-                <div class="px-4 first:pl-0 py-2 md:py-0">
-                    <p class="text-2xl font-serif text-[#0d2a5c]">{{ $s['value'] }}</p>
-                    <p class="text-xs text-[#7a7d8b] mt-1">{{ $s['label'] }}</p>
+                <div class="rounded-xl bg-muted/50 md:bg-transparent md:rounded-none px-3 py-3 md:px-4 md:first:pl-0 md:py-0">
+                    <p class="text-2xl md:text-3xl font-serif text-navy tabular-nums">{{ $s['value'] }}</p>
+                    <p class="text-xs text-muted-foreground mt-1 leading-snug">{{ $s['label'] }}</p>
                 </div>
             @endforeach
         </div>
@@ -78,13 +78,10 @@
                 @endif
             </x-card>
 
-            <div class="bg-[#0d2a5c] text-white rounded-xl p-6">
-                <p class="text-[11px] tracking-[0.14em] uppercase text-[#aec1e4]">Dasar hukum</p>
-                <p class="mt-2.5 font-serif text-[14.5px] leading-relaxed">
-                    Calon Advokat wajib menjalani magang di kantor advokat sekurang-kurangnya 2 tahun terus-menerus.
-                </p>
-                <p class="text-xs text-[#aec1e4] mt-2">Pasal 3 ayat (1) huruf g, Pasal 29 ayat (5) & (6) UU No. 18/2003</p>
-            </div>
+            <x-navy-callout eyebrow="Dasar hukum" title="Magang wajib minimal 2 tahun terus-menerus">
+                Calon Advokat wajib menjalani magang di kantor advokat sekurang-kurangnya 2 tahun terus-menerus.
+                <p class="text-xs text-sidebar-dim mt-3">Pasal 3 ayat (1) huruf g, Pasal 29 ayat (5) & (6) UU No. 18/2003</p>
+            </x-navy-callout>
         </div>
     </div>
 </x-layout>
