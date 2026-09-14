@@ -44,7 +44,7 @@ class LogbookController extends Controller
             'calonList' => $calonList,
             'selected' => $selected,
             'entries' => $entries,
-            'rekap' => $monthlyLogbookSummary,
+            'monthlyLogbookSummary' => $monthlyLogbookSummary,
             'bulanLabel' => now()->translatedFormat('F Y'),
         ]);
     }
