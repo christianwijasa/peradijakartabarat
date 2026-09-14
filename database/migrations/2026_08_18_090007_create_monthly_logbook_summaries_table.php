@@ -13,7 +13,10 @@ return new class extends Migration
             $table->foreignId('candidate_advocate_id')->constrained()->cascadeOnDelete();
             $table->unsignedTinyInteger('month');
             $table->unsignedSmallInteger('year');
-            $table->foreignId('signed_by_supervising_lawyer_id')->nullable()->constrained('supervising_lawyers')->nullOnDelete();
+            $table->foreignId('signed_by_supervising_lawyer_id')
+                ->nullable()
+                ->constrained('supervising_lawyers', 'id', 'mls_signed_by_lawyer_fk')
+                ->nullOnDelete();
             $table->enum('status', ['IN_PROGRESS', 'PENDING_SIGNATURE', 'SIGNED'])->default('IN_PROGRESS');
             $table->timestamp('signed_at')->nullable();
             $table->timestamps();
