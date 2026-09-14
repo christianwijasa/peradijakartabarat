@@ -17,7 +17,7 @@ return new class extends Migration
             $table->enum('status', ['IN_PROGRESS', 'PENDING_SIGNATURE', 'SIGNED'])->default('IN_PROGRESS');
             $table->timestamp('signed_at')->nullable();
             $table->timestamps();
-            $table->unique(['candidate_advocate_id', 'month', 'year']);
+            $table->unique(['candidate_advocate_id', 'month', 'year'], 'mls_candidate_period_unique');
         });
     }
 

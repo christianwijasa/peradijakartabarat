@@ -15,7 +15,7 @@ return new class extends Migration
             $table->enum('status', ['SUBMITTED', 'CV_REVIEW', 'INTERVIEW', 'ACCEPTED', 'REJECTED'])->default('SUBMITTED');
             $table->date('applied_on');
             $table->timestamps();
-            $table->unique(['candidate_advocate_id', 'job_posting_id']);
+            $table->unique(['candidate_advocate_id', 'job_posting_id'], 'ia_candidate_job_unique');
         });
     }
 
