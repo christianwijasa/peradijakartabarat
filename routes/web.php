@@ -19,7 +19,7 @@ Route::get('/up', function () {
     return response()->noContent();
 });
 
-Route::match(['GET', 'HEAD'], '/', HomeController::class);
+Route::get('/', HomeController::class);
 
 Route::get('/dashboard', DashboardController::class)->middleware('auth')->name('dashboard');
 

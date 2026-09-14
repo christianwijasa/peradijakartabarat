@@ -12,7 +12,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        if (! filter_var(env('DISABLE_ROUTE_CACHE', false), FILTER_VALIDATE_BOOLEAN)) {
+            return;
+        }
+
+        $path = base_path('bootstrap/cache/routes-v7.php');
+
+        if (is_file($path)) {
+            @unlink($path);
+        }
     }
 
     /**

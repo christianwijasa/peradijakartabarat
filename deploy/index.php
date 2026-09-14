@@ -18,6 +18,11 @@ if (file_exists($maintenance = __DIR__.'/src/storage/framework/maintenance.php')
 
 require __DIR__.'/src/vendor/autoload.php';
 
+// Stale route:cache on shared hosting can break "/" (GET → MethodNotAllowed, HEAD only).
+foreach (glob(__DIR__.'/src/bootstrap/cache/routes-v7.php') ?: [] as $cachedRoutes) {
+    @unlink($cachedRoutes);
+}
+
 $app = require_once __DIR__.'/src/bootstrap/app.php';
 
 $app->usePublicPath(__DIR__);
