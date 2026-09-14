@@ -25,7 +25,10 @@ foreach (glob(__DIR__.'/src/bootstrap/cache/routes-v7.php') ?: [] as $cachedRout
 
 $app = require_once __DIR__.'/src/bootstrap/app.php';
 
-$app->usePublicPath(__DIR__);
+// Vite output: either webroot/build/ (after sync-webroot.sh) or src/public/build/ (npm run build in src).
+if (is_file(__DIR__.'/build/manifest.json')) {
+    $app->usePublicPath(__DIR__);
+}
 
 $kernel = $app->make(Kernel::class);
 

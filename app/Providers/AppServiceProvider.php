@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -28,6 +29,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->configureSharedHostingPublicPath();
+
         $rootUrl = config('app.url');
 
         if (is_string($rootUrl) && $rootUrl !== '') {
@@ -42,5 +45,29 @@ class AppServiceProvider extends ServiceProvider
                 }
             }
         }
+    }
+
+    protected function configureSharedHostingPublicPath(): void
+    {
+        if ($this->app->runningInConsole()) {
+            return;
+        }
+
+        $webroot = dirname(base_path());
+        $webrootManifest = $webroot.'/build/manifest.json';
+
+        if (is_file($webrootManifest)) {
+            $this->app->usePublicPath($webroot);
+            Vite::useHotFile($webroot.'/hot');
+
+            return;
+        }
+
+        if (! is_file(public_path('build/manifest.json'))) {
+            return;
+        }
+
+        // Default Laravel public path (src/public) when build was not synced to webroot.
+        $this->app->usePublicPath(base_path('public'));
     }
 }

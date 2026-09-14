@@ -19,19 +19,29 @@ The top-level `vendor/` folder on scrb is usually **Composer package assets** pu
 1. Pull or clone the repo into `src/`.
 2. In `src/`: `composer install --no-dev`, copy `.env`, `php artisan key:generate`, migrate, seed if needed.
 3. In `src/`: `npm ci && npm run build`.
-4. Copy to the **parent** of `src/` (deploy root):
+4. Build frontend assets (required — `@vite` needs `manifest.json`):
+
+   ```bash
+   cd src
+   npm ci
+   npm run build
+   ```
+
+   This creates `src/public/build/`. Either leave it there **or** sync to the webroot (step 5).
+
+5. Copy to the **parent** of `src/` (deploy root):
    - `deploy/index.php` → `index.php`
    - `deploy/.htaccess.example` → `.htaccess` (edit `RewriteBase`)
    - `src/public/build/` → `build/`
    - `src/public/robots.txt` → `robots.txt`
-5. `.env` in `src/`:
+6. `.env` in `src/`:
 
    ```env
    APP_URL=https://fchr.space/laravel/peradijakartabarat
    SESSION_PATH=/laravel/peradijakartabarat
    ```
 
-6. Clear caches **in src/** (do not use `route:cache` on shared hosting until stable):
+7. Clear caches **in src/** (do not use `route:cache` on shared hosting until stable):
 
    ```bash
    cd src
@@ -41,7 +51,15 @@ The top-level `vendor/` folder on scrb is usually **Composer package assets** pu
    rm -f bootstrap/cache/config.php bootstrap/cache/routes-v7.php
    ```
 
-7. Permissions: `storage/` and `bootstrap/cache/` writable under `src/`.
+8. Permissions: `storage/` and `bootstrap/cache/` writable under `src/`.
+
+### Vite manifest missing?
+
+| Symptom | Fix |
+|--------|-----|
+| Looks for `src/public/build/manifest.json` | Run `npm run build` inside `src/` |
+| Looks for `…/peradijakartabarat/build/manifest.json` | Copy `src/public/build` → webroot `build/` **or** remove unconditional `usePublicPath` from `index.php` |
+| “Start the development server” on production | You need a production build, not `npm run dev` |
 
 ## Common mistakes (peradi vs scrb)
 
