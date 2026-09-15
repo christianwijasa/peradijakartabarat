@@ -32,34 +32,34 @@
                         $queueStatus = \App\Support\CandidateVerificationChecklist::adminQueueStatus($ca);
                         $itemsByLabel = $ca->checklistItems->keyBy('label');
                     @endphp
-                    <div class="flex flex-col sm:flex-row sm:items-center gap-4 px-5 md:px-6 py-5">
-                        <div class="flex-1 min-w-0">
+                    <div class="flex flex-col lg:flex-row lg:items-center gap-4 px-5 md:px-6 py-5">
+                        <div class="lg:w-64 shrink-0">
                             <p class="font-medium">{{ $ca->user->name }}</p>
-                            <p class="text-xs text-muted-foreground mt-0.5">
-                                {{ $ca->candidate_code }}
-                                · NIK {{ $ca->national_id_number ? substr($ca->national_id_number, 0, 4).'••••' : '—' }}
-                                · UPA {{ $ca->bar_exam_cohort ?? '—' }}
-                            </p>
-                            <div class="mt-3 flex flex-wrap gap-x-3 gap-y-1.5">
-                                @foreach (\App\Support\CandidateVerificationChecklist::defaultItems() as $def)
-                                    @php $item = $itemsByLabel->get($def['label']); @endphp
-                                    <span class="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-                                        <span @class([\App\Support\CandidateVerificationChecklist::itemIconClass($item), 'shrink-0'])></span>
-                                        <span class="sr-only">{{ $def['label'] }}:</span>
-                                        @if ($item?->is_checked)
-                                            OK
-                                        @elseif ($item?->admin_note)
-                                            Revisi
+                            <p class="text-xs text-muted-foreground mt-0.5">NIK {{ $ca->national_id_number ? substr($ca->national_id_number, 0, 4).'••••' : '—' }} · UPA {{ $ca->bar_exam_cohort ?? '—' }}</p>
+                        </div>
+                        <div class="flex-1 app-card-muted px-4 py-3 flex flex-col gap-2">
+                            @foreach (\App\Support\CandidateVerificationChecklist::defaultItems() as $def)
+                                @php
+                                    $item = $itemsByLabel->get($def['label']);
+                                    $icon = \App\Support\CandidateVerificationChecklist::itemIconClass($item);
+                                @endphp
+                                <div class="flex items-start gap-2.5 text-sm leading-snug">
+                                    <span @class([$icon, 'mt-1.5 shrink-0'])></span>
+                                    <span class="min-w-0">
+                                        {{ $def['label'] }}
+                                        @if ($item?->document_url)
+                                            · <a href="{{ $item->document_url }}" target="_blank" rel="noopener noreferrer" class="text-primary underline underline-offset-2 text-xs">Buka link</a>
                                         @elseif ($item?->hasDocumentReference())
-                                            Review
-                                        @else
-                                            Kosong
+                                            <span class="text-xs text-muted-foreground"> · Berkas tersimpan</span>
+                                        @endif
+                                        @if ($item?->admin_note)
+                                            <span class="block text-xs text-tag-bad-fg mt-1">Catatan: {{ $item->admin_note }}</span>
                                         @endif
                                     </span>
-                                @endforeach
-                            </div>
+                                </div>
+                            @endforeach
                         </div>
-                        <div class="app-queue-actions shrink-0">
+                        <div class="app-queue-actions">
                             @if ($queueStatus === 'belum_lengkap')
                                 <x-tag variant="bad">Belum lengkap</x-tag>
                             @elseif ($queueStatus === 'siap')
