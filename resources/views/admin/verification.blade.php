@@ -95,7 +95,7 @@
                             @endif
                             <form method="POST" action="{{ route('admin.verification.candidate.setujui', $ca) }}" class="w-full sm:w-auto">
                                 @csrf
-                                <x-btn class="w-full sm:w-auto" @disabled($queueStatus !== 'siap')>Setujui admisi</x-btn>
+                                <x-btn class="w-full sm:w-auto" :disabled="$queueStatus !== 'siap'">Setujui admisi</x-btn>
                             </form>
                         </div>
                     </div>
