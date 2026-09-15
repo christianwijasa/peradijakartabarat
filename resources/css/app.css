@@ -11,6 +11,10 @@
         @apply scroll-smooth;
     }
 
+    .font-serif {
+        @apply tracking-tight;
+    }
+
     ::selection {
         @apply bg-primary/15 text-navy;
     }

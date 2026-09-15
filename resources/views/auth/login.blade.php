@@ -1,6 +1,6 @@
 <x-guest-layout>
     <h1 class="font-serif text-xl text-navy mb-1">Masuk</h1>
-    <p class="text-sm text-muted-foreground mb-6 leading-relaxed">Masuk sesuai peran: calon advokat, law firm, atau admin DPC.</p>
+    <p class="text-sm text-muted-foreground mb-6 leading-relaxed">Masuk sesuai peran: calon advokat, kantor hukum, atau admin DPC.</p>
 
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
@@ -8,7 +8,7 @@
         @csrf
 
         <div>
-            <x-input-label for="email" value="Email" />
+            <x-input-label for="email" value="Alamat email" />
             <x-text-input id="email" class="block mt-1.5 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
@@ -28,8 +28,8 @@
 
         <div class="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 pt-1">
             <div class="flex flex-col gap-1 text-sm text-center sm:text-left">
-                <a class="text-muted-foreground hover:text-ink underline underline-offset-2" href="{{ route('register.advocate-candidate') }}">Register as advocate candidate</a>
-                <a class="text-muted-foreground hover:text-ink underline underline-offset-2" href="{{ route('register.law-firm') }}">Daftar law firm</a>
+                <a class="text-muted-foreground hover:text-ink underline underline-offset-2" href="{{ route('register.advocate-candidate') }}">Daftar calon advokat</a>
+                <a class="text-muted-foreground hover:text-ink underline underline-offset-2" href="{{ route('register.law-firm') }}">Daftar kantor hukum</a>
             </div>
 
             <x-primary-button class="w-full sm:w-auto justify-center">

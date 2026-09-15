@@ -12,8 +12,9 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
-                serif: ['Lora', 'Georgia', ...defaultTheme.fontFamily.serif],
+                sans: ['"Plus Jakarta Sans"', ...defaultTheme.fontFamily.sans],
+                // Headings & stats: same family, heavier weight (modern sans, no traditional serif)
+                serif: ['"Plus Jakarta Sans"', ...defaultTheme.fontFamily.sans],
             },
             colors: {
                 ink: {
