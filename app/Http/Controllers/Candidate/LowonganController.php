@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Calon;
+namespace App\Http\Controllers\Candidate;
 
 use App\Http\Controllers\Controller;
 use App\Models\InternshipApplication;
@@ -32,7 +32,7 @@ class LowonganController extends Controller
 
         $internshipApplicationFirmIds = $ca->internshipApplications()->with('jobPosting')->get()->pluck('jobPosting.law_firm_id')->filter()->all();
 
-        return view('calon.lowongan', [
+        return view('candidate.lowongan', [
             'jobPostings' => $jobPostings,
             'bidangFilter' => $bidangFilter,
             'filter' => $filter,

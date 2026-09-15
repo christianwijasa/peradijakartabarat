@@ -2,7 +2,7 @@
     crumb="Calon Advokat"
     title="Beranda pemagang"
     subtitle="Ringkasan masa magang {{ $ca->internship_months }} bulan, penempatan, dan posisi kamu dalam alur magang."
-    :menu="\App\Support\SidebarMenu::calon('dashboard')"
+    :menu="\App\Support\SidebarMenu::candidate('dashboard')"
     :user-meta="$ca->candidate_code.' · Alumni Lulus UPA'"
 >
     <x-card class="p-6">

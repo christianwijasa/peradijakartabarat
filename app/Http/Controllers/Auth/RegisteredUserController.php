@@ -71,7 +71,7 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('calon.verifikasi', absolute: false))
+        return redirect(route('candidate.verification', absolute: false))
             ->with('status', 'Akun berhasil dibuat. Lengkapi unggahan berkas verifikasi admisi.');
     }
 }

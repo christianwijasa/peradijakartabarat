@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Calon;
+namespace App\Http\Controllers\Candidate;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -40,7 +40,7 @@ class DashboardController extends Controller
             ['value' => $ca->monthlyLogbookSummaries()->where('status', 'PENDING_SIGNATURE')->count(), 'label' => 'Menunggu tanda tangan'],
         ];
 
-        return view('calon.dashboard', [
+        return view('candidate.dashboard', [
             'ca' => $ca,
             'timeline' => $timeline,
             'stats' => $stats,

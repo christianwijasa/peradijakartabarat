@@ -14,8 +14,11 @@ class VerifikasiController extends Controller
 {
     public function index(Request $request): View
     {
-        $tab = $request->query('tab', 'calon');
-        $tab = in_array($tab, ['calon', 'firm'], true) ? $tab : 'calon';
+        $tab = $request->query('tab', 'candidate');
+        if ($tab === 'calon') {
+            $tab = 'candidate';
+        }
+        $tab = in_array($tab, ['candidate', 'firm'], true) ? $tab : 'candidate';
 
         $queueCalon = CandidateAdvocate::whereIn('verification_status', ['PENDING', 'NEEDS_CORRECTION'])
             ->with(['user', 'checklistItems'])
@@ -33,7 +36,7 @@ class VerifikasiController extends Controller
             ['value' => (string) LawFirm::where('verification_status', 'VERIFIED')->get()->sum(fn ($f) => $f->kuotaTersisa()), 'label' => 'Slot bimbingan tersedia'],
         ];
 
-        return view('admin.verifikasi', [
+        return view('admin.verification', [
             'tab' => $tab,
             'queueCalon' => $queueCalon,
             'queueFirm' => $queueFirm,

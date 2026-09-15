@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Calon;
+namespace App\Http\Controllers\Candidate;
 
 use App\Http\Controllers\Controller;
 use App\Models\CandidateAdvocate;
@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
-class VerifikasiController extends Controller
+class VerificationController extends Controller
 {
     public function index(): View
     {
@@ -21,7 +21,7 @@ class VerifikasiController extends Controller
 
         $items = $ca->fresh()->checklistItems;
 
-        return view('calon.verifikasi', [
+        return view('candidate.verification', [
             'ca' => $ca,
             'items' => $items,
         ]);

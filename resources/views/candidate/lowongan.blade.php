@@ -2,7 +2,7 @@
     crumb="Calon Advokat"
     title="Cari lowongan magang"
     subtitle="Hanya kantor hukum terverifikasi Admin DPC dengan kuota bimbingan tersisa yang dapat menerima lamaran."
-    :menu="\App\Support\SidebarMenu::calon('lowongan')"
+    :menu="\App\Support\SidebarMenu::candidate('lowongan')"
     :user-meta="Auth::user()->candidateAdvocate->candidate_code.' · Alumni Lulus UPA'"
 >
     <form method="GET" class="flex flex-col gap-3">
@@ -41,7 +41,7 @@
                 <div class="text-right shrink-0">
                     <p class="text-sm text-[#5b5d68]">Sisa slot <span class="font-semibold text-[#191a20]">{{ $jobPosting->slotTersisa() }}</span></p>
                     <p class="text-xs text-[#7a7d8b] mb-3">dari kuota {{ $jobPosting->quota }}</p>
-                    <form method="POST" action="{{ route('calon.lowongan.lamar', $jobPosting) }}">
+                    <form method="POST" action="{{ route('candidate.lowongan.lamar', $jobPosting) }}">
                         @csrf
                         <x-btn :variant="$sudahMelamar ? 'done' : 'primary'" :disabled="$sudahMelamar">
                             {{ $sudahMelamar ? 'Lamaran terkirim' : 'Ajukan lamaran' }}

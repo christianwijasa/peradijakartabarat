@@ -2,7 +2,7 @@
     crumb="Calon Advokat"
     title="Verifikasi admisi"
     subtitle="Kirim tautan berkas kelulusan UPA dan identitas (Google Drive, OneDrive, dll.) untuk diverifikasi Admin DPC."
-    :menu="\App\Support\SidebarMenu::calon('verifikasi')"
+    :menu="\App\Support\SidebarMenu::candidate('verification')"
     :user-meta="$ca->candidate_code.' · Verifikasi '.strtoupper($ca->verification_status)"
 >
     @if (session('status'))
@@ -63,7 +63,7 @@
                     @if ($needsLink)
                         <form
                             method="POST"
-                            action="{{ route('calon.verifikasi.link', $item) }}"
+                            action="{{ route('candidate.verification.link', $item) }}"
                             class="lg:w-80 shrink-0 flex flex-col gap-2"
                         >
                             @csrf

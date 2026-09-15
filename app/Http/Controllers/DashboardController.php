@@ -9,9 +9,9 @@ class DashboardController extends Controller
     public function __invoke(): RedirectResponse
     {
         return match (auth()->user()->role) {
-            'calon_advokat' => redirect()->route('calon.dashboard'),
+            'calon_advokat' => redirect()->route('candidate.dashboard'),
             'law_firm' => redirect()->route('firm.dashboard'),
-            'admin_dpc' => redirect()->route('admin.verifikasi'),
+            'admin_dpc' => redirect()->route('admin.verification'),
             default => redirect('/'),
         };
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Calon;
+namespace App\Http\Controllers\Candidate;
 
 use App\Http\Controllers\Controller;
 use App\Models\MonthlyLogbookSummary;
@@ -22,7 +22,7 @@ class LogbookController extends Controller
             ->orderByDesc('entry_date')
             ->get();
 
-        return view('calon.logbook', [
+        return view('candidate.logbook', [
             'ca' => $ca,
             'entries' => $entries,
             'bulanLabel' => $now->translatedFormat('F Y'),

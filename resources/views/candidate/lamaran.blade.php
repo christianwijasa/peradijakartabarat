@@ -12,7 +12,7 @@
     crumb="Calon Advokat"
     title="InternshipApplication saya"
     subtitle="Riwayat pengajuan magang dan tahapan seleksi di setiap kantor hukum."
-    :menu="\App\Support\SidebarMenu::calon('lamaran')"
+    :menu="\App\Support\SidebarMenu::candidate('lamaran')"
     :user-meta="Auth::user()->candidateAdvocate->candidate_code.' · Alumni Lulus UPA'"
 >
     <x-card class="overflow-hidden">

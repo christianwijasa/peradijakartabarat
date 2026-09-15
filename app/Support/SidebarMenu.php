@@ -10,21 +10,21 @@ use Illuminate\Support\Facades\Auth;
 
 class SidebarMenu
 {
-    public static function calon(string $active): array
+    public static function candidate(string $active): array
     {
         $ca = Auth::user()->candidateAdvocate;
         $logbookBadge = $ca ? $ca->logbookEntries()->where('status', 'PENDING_SIGNATURE')->count() : 0;
-        $verifikasiBadge = $ca && in_array($ca->verification_status, ['PENDING', 'NEEDS_CORRECTION'], true)
+        $verificationBadge = $ca && in_array($ca->verification_status, ['PENDING', 'NEEDS_CORRECTION'], true)
             ? CandidateVerificationChecklist::pendingUploadCount($ca)
             : 0;
 
         return [
-            ['label' => 'Dashboard', 'route' => route('calon.dashboard'), 'active' => $active === 'dashboard'],
-            ['label' => 'Verifikasi Admisi', 'route' => route('calon.verifikasi'), 'active' => $active === 'verifikasi', 'badge' => $verifikasiBadge ?: null],
-            ['label' => 'Cari Lowongan', 'route' => route('calon.lowongan'), 'active' => $active === 'lowongan'],
-            ['label' => 'Lamaran Saya', 'route' => route('calon.lamaran'), 'active' => $active === 'lamaran'],
-            ['label' => 'Logbook Digital', 'route' => route('calon.logbook'), 'active' => $active === 'logbook', 'badge' => $logbookBadge ?: null],
-            ['label' => 'Berkas Sumpah', 'route' => route('calon.berkas'), 'active' => $active === 'berkas'],
+            ['label' => 'Dashboard', 'route' => route('candidate.dashboard'), 'active' => $active === 'dashboard'],
+            ['label' => 'Verifikasi Admisi', 'route' => route('candidate.verification'), 'active' => $active === 'verification', 'badge' => $verificationBadge ?: null],
+            ['label' => 'Cari Lowongan', 'route' => route('candidate.lowongan'), 'active' => $active === 'lowongan'],
+            ['label' => 'Lamaran Saya', 'route' => route('candidate.lamaran'), 'active' => $active === 'lamaran'],
+            ['label' => 'Logbook Digital', 'route' => route('candidate.logbook'), 'active' => $active === 'logbook', 'badge' => $logbookBadge ?: null],
+            ['label' => 'Berkas Sumpah', 'route' => route('candidate.berkas'), 'active' => $active === 'berkas'],
         ];
     }
 
@@ -51,7 +51,7 @@ class SidebarMenu
             + LawFirm::whereIn('verification_status', ['PENDING', 'NEEDS_CORRECTION'])->count();
 
         return [
-            ['label' => 'Verifikasi', 'route' => route('admin.verifikasi'), 'active' => $active === 'verifikasi', 'badge' => $badge ?: null],
+            ['label' => 'Verifikasi', 'route' => route('admin.verification'), 'active' => $active === 'verification', 'badge' => $badge ?: null],
             ['label' => 'Monitoring & Audit', 'route' => route('admin.monitoring'), 'active' => $active === 'monitoring'],
         ];
     }

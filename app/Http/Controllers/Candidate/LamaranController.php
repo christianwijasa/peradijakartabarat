@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Calon;
+namespace App\Http\Controllers\Candidate;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +16,6 @@ class LamaranController extends Controller
             ->latest('applied_on')
             ->get();
 
-        return view('calon.lamaran', ['internshipApplications' => $internshipApplications]);
+        return view('candidate.lamaran', ['internshipApplications' => $internshipApplications]);
     }
 }

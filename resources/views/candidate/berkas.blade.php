@@ -6,7 +6,7 @@
     crumb="Calon Advokat"
     title="Paket berkas sumpah"
     subtitle="Seluruh berkas digabung otomatis menjadi satu paket pengajuan sumpah di Pengadilan Tinggi."
-    :menu="\App\Support\SidebarMenu::calon('berkas')"
+    :menu="\App\Support\SidebarMenu::candidate('berkas')"
     :user-meta="$ca->candidate_code.' · Alumni Lulus UPA'"
 >
     <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-5 items-start">

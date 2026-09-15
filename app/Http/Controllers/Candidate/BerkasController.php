@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Calon;
+namespace App\Http\Controllers\Candidate;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -16,7 +16,7 @@ class BerkasController extends Controller
         $lulusAudit = $audit?->status === 'PASSED';
         $semuaLengkap = $berkas->every(fn ($b) => $b->status === 'COMPLETE');
 
-        return view('calon.berkas', [
+        return view('candidate.berkas', [
             'ca' => $ca,
             'berkas' => $berkas,
             'bisaUnduh' => $lulusAudit && $semuaLengkap,

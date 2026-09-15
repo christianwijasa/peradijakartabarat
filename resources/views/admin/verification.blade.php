@@ -2,7 +2,7 @@
     crumb="Admin DPC Jakarta Barat"
     title="Verifikasi dual-level"
     subtitle="Validasi kelulusan alumni serta kelayakan kantor hukum dan advokat pendamping."
-    :menu="\App\Support\SidebarMenu::admin('verifikasi')"
+    :menu="\App\Support\SidebarMenu::admin('verification')"
     user-meta="Admin Bidang Magang"
 >
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
@@ -14,11 +14,11 @@
     <x-card class="overflow-hidden">
         <div class="p-4 md:p-5 border-b border-line">
             <nav class="app-tab-bar" aria-label="Tab verifikasi">
-                <a href="{{ route('admin.verifikasi', ['tab' => 'calon']) }}"
-                   @class([$tab === 'calon' ? 'app-tab-active' : 'app-tab-idle'])>
+                <a href="{{ route('admin.verification', ['tab' => 'candidate']) }}"
+                   @class([$tab === 'candidate' ? 'app-tab-active' : 'app-tab-idle'])>
                     Calon Advokat
                 </a>
-                <a href="{{ route('admin.verifikasi', ['tab' => 'firm']) }}"
+                <a href="{{ route('admin.verification', ['tab' => 'firm']) }}"
                    @class([$tab === 'firm' ? 'app-tab-active' : 'app-tab-idle'])>
                     Law Firm & Pendamping
                 </a>
@@ -26,7 +26,7 @@
         </div>
 
         <div class="divide-y divide-line">
-            @if ($tab === 'calon')
+            @if ($tab === 'candidate')
                 @forelse ($queueCalon as $ca)
                     @php
                         $queueStatus = \App\Support\CandidateVerificationChecklist::adminQueueStatus($ca);
@@ -68,7 +68,7 @@
                             @else
                                 <x-tag variant="info">Menunggu review</x-tag>
                             @endif
-                            <form method="POST" action="{{ route('admin.verifikasi.calon.setujui', $ca) }}" class="w-full sm:w-auto">
+                            <form method="POST" action="{{ route('admin.verification.candidate.setujui', $ca) }}" class="w-full sm:w-auto">
                                 @csrf
                                 <x-btn class="w-full sm:w-auto">Setujui</x-btn>
                             </form>
@@ -98,7 +98,7 @@
                         </div>
                         <div class="app-queue-actions">
                             <x-tag :variant="$siap ? 'wait' : 'bad'">{{ $siap ? 'Penetapan kuota' : 'Perlu perbaikan' }}</x-tag>
-                            <form method="POST" action="{{ route('admin.verifikasi.firm.tetapkan-kuota', $firm) }}" class="w-full sm:w-auto">
+                            <form method="POST" action="{{ route('admin.verification.firm.tetapkan-kuota', $firm) }}" class="w-full sm:w-auto">
                                 @csrf
                                 <x-btn class="w-full sm:w-auto">Tetapkan kuota</x-btn>
                             </form>

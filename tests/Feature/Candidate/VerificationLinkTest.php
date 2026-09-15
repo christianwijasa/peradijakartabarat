@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Calon;
+namespace Tests\Feature\Candidate;
 
 use App\Models\CandidateAdvocate;
 use App\Models\User;
@@ -25,7 +25,7 @@ class VerificationLinkTest extends TestCase
 
         $item = $ca->checklistItems()->where('label', 'Sertifikat PKPA cocok data admisi')->firstOrFail();
 
-        $response = $this->actingAs($user)->post(route('calon.verifikasi.link', $item), [
+        $response = $this->actingAs($user)->post(route('candidate.verification.link', $item), [
             'document_url' => 'https://drive.google.com/file/d/example/view',
         ]);
 

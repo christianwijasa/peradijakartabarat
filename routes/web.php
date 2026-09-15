@@ -2,12 +2,12 @@
 
 use App\Http\Controllers\Admin\MonitoringController as AdminMonitoringController;
 use App\Http\Controllers\Admin\VerifikasiController as AdminVerifikasiController;
-use App\Http\Controllers\Calon\BerkasController;
-use App\Http\Controllers\Calon\DashboardController as CalonDashboardController;
-use App\Http\Controllers\Calon\LamaranController;
-use App\Http\Controllers\Calon\LogbookController;
-use App\Http\Controllers\Calon\LowonganController;
-use App\Http\Controllers\Calon\VerifikasiController as CalonVerifikasiController;
+use App\Http\Controllers\Candidate\BerkasController;
+use App\Http\Controllers\Candidate\DashboardController as CandidateDashboardController;
+use App\Http\Controllers\Candidate\LamaranController;
+use App\Http\Controllers\Candidate\LogbookController;
+use App\Http\Controllers\Candidate\LowonganController;
+use App\Http\Controllers\Candidate\VerificationController as CandidateVerificationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Firm\DashboardController as FirmDashboardController;
@@ -30,16 +30,26 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::middleware(['auth', 'role:calon_advokat'])->prefix('calon')->name('calon.')->group(function () {
-    Route::get('/dashboard', [CalonDashboardController::class, 'index'])->name('dashboard');
+Route::middleware(['auth', 'role:calon_advokat'])->prefix('candidate')->name('candidate.')->group(function () {
+    Route::get('/dashboard', [CandidateDashboardController::class, 'index'])->name('dashboard');
     Route::get('/lowongan', [LowonganController::class, 'index'])->name('lowongan');
     Route::post('/lowongan/{jobPosting}/lamar', [LowonganController::class, 'lamar'])->name('lowongan.lamar');
     Route::get('/lamaran', [LamaranController::class, 'index'])->name('lamaran');
     Route::get('/logbook', [LogbookController::class, 'index'])->name('logbook');
     Route::post('/logbook', [LogbookController::class, 'store'])->name('logbook.store');
     Route::get('/berkas', [BerkasController::class, 'index'])->name('berkas');
-    Route::get('/verifikasi', [CalonVerifikasiController::class, 'index'])->name('verifikasi');
-    Route::post('/verifikasi/{verificationChecklist}/link', [CalonVerifikasiController::class, 'storeLink'])->name('verifikasi.link');
+    Route::get('/verification', [CandidateVerificationController::class, 'index'])->name('verification');
+    Route::post('/verification/{verificationChecklist}/link', [CandidateVerificationController::class, 'storeLink'])->name('verification.link');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::redirect('/calon', '/candidate/dashboard');
+    Route::redirect('/calon/dashboard', '/candidate/dashboard');
+    Route::redirect('/calon/lowongan', '/candidate/lowongan');
+    Route::redirect('/calon/lamaran', '/candidate/lamaran');
+    Route::redirect('/calon/logbook', '/candidate/logbook');
+    Route::redirect('/calon/berkas', '/candidate/berkas');
+    Route::redirect('/calon/verifikasi', '/candidate/verification');
 });
 
 Route::middleware(['auth', 'role:law_firm'])->prefix('firm')->name('firm.')->group(function () {
@@ -53,9 +63,10 @@ Route::middleware(['auth', 'role:law_firm'])->prefix('firm')->name('firm.')->gro
 });
 
 Route::middleware(['auth', 'role:admin_dpc'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/verifikasi', [AdminVerifikasiController::class, 'index'])->name('verifikasi');
-    Route::post('/verifikasi/calon/{candidateAdvocate}/setujui', [AdminVerifikasiController::class, 'setujuiCalon'])->name('verifikasi.calon.setujui');
-    Route::post('/verifikasi/firm/{lawFirm}/tetapkan-kuota', [AdminVerifikasiController::class, 'tetapkanKuotaFirm'])->name('verifikasi.firm.tetapkan-kuota');
+    Route::redirect('/verifikasi', '/admin/verification');
+    Route::get('/verification', [AdminVerifikasiController::class, 'index'])->name('verification');
+    Route::post('/verification/candidate/{candidateAdvocate}/setujui', [AdminVerifikasiController::class, 'setujuiCalon'])->name('verification.candidate.setujui');
+    Route::post('/verification/firm/{lawFirm}/tetapkan-kuota', [AdminVerifikasiController::class, 'tetapkanKuotaFirm'])->name('verification.firm.tetapkan-kuota');
     Route::get('/monitoring', [AdminMonitoringController::class, 'index'])->name('monitoring');
 });
 

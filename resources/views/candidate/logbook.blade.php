@@ -6,7 +6,7 @@
     crumb="Calon Advokat"
     title="Logbook digital"
     subtitle="Catat riset hukum dan pendampingan sidang harian. Pendamping menandatangani rekap bulanan."
-    :menu="\App\Support\SidebarMenu::calon('logbook')"
+    :menu="\App\Support\SidebarMenu::candidate('logbook')"
     :user-meta="Auth::user()->candidateAdvocate->candidate_code.' · Alumni Lulus UPA'"
 >
     <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-5 items-start">
@@ -38,7 +38,7 @@
 
         <x-card class="p-6">
             <h2 class="font-semibold text-[15px]">Tambah catatan harian</h2>
-            <form method="POST" action="{{ route('calon.logbook.store') }}" class="mt-4 flex flex-col gap-4">
+            <form method="POST" action="{{ route('candidate.logbook.store') }}" class="mt-4 flex flex-col gap-4">
                 @csrf
                 <div>
                     <label class="text-xs text-[#7a7d8b]">Jenis kegiatan</label>
