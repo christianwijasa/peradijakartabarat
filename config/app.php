@@ -123,6 +123,23 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Site maintenance (via .env)
+    |--------------------------------------------------------------------------
+    |
+    | Set APP_SITE_MAINTENANCE=true to return HTTP 503 for all web requests.
+    | Works alongside `php artisan down`; either flag blocks public access.
+    |
+    */
+
+    'site_maintenance' => filter_var(env('APP_SITE_MAINTENANCE', false), FILTER_VALIDATE_BOOLEAN),
+
+    'site_maintenance_message' => env(
+        'APP_SITE_MAINTENANCE_MESSAGE',
+        'Sistem sedang dalam pemeliharaan. Silakan coba lagi nanti.'
+    ),
+
     'providers' => Illuminate\Support\ServiceProvider::defaultProviders()->merge([
         App\Providers\AppServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
