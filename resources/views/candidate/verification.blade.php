@@ -27,7 +27,7 @@
                     <div class="flex-1 min-w-0">
                         <div class="flex items-start gap-2.5 text-sm leading-snug">
                             <span @class([
-                                $item->is_checked ? 'app-check-ok' : ($hasLink ? 'app-check-wait' : 'app-check-bad'),
+                                \App\Support\CandidateVerificationChecklist::itemIconClass($item),
                                 'mt-1.5 shrink-0',
                             ])></span>
                             <div>
@@ -41,6 +41,8 @@
                                         @endif
                                         @if ($item->is_checked)
                                             · <span class="text-tag-ok-fg">Disetujui Admin</span>
+                                        @elseif ($item->admin_note)
+                                            · <span class="text-tag-bad-fg">Perlu revisi</span>
                                         @else
                                             · <span class="text-tag-wait-fg">Menunggu review Admin</span>
                                         @endif
@@ -51,6 +53,9 @@
                                     <p class="text-xs text-muted-foreground mt-1">
                                         {{ $item->is_checked ? 'Terpenuhi' : 'Menunggu validasi Admin DPC' }}
                                     </p>
+                                @endif
+                                @if ($item->admin_note)
+                                    <p class="text-xs text-tag-bad-fg mt-1.5 leading-relaxed">Catatan Admin DPC: {{ $item->admin_note }}</p>
                                 @endif
                             </div>
                         </div>

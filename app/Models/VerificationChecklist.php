@@ -18,6 +18,7 @@ class VerificationChecklist extends Model
         'file_size_label',
         'document_url',
         'is_checked',
+        'admin_note',
     ];
 
     public function hasDocumentReference(): bool

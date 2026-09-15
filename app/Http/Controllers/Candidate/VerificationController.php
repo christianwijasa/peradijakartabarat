@@ -46,7 +46,12 @@ class VerificationController extends Controller
         $verificationChecklist->update([
             'document_url' => $validated['document_url'],
             'is_checked' => false,
+            'admin_note' => null,
         ]);
+
+        if ($ca->verification_status === 'NEEDS_CORRECTION') {
+            $ca->update(['verification_status' => 'PENDING']);
+        }
 
         return back()->with('status', 'Link berkas "'.$verificationChecklist->label.'" tersimpan. Menunggu review Admin DPC.');
     }

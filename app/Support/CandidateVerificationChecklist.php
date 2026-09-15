@@ -92,6 +92,24 @@ final class CandidateVerificationChecklist
         return in_array($label, self::uploadLabels(), true);
     }
 
+    /** @return 'app-check-ok'|'app-check-wait'|'app-check-bad' */
+    public static function itemIconClass(?VerificationChecklist $item): string
+    {
+        if (! $item) {
+            return 'app-check-bad';
+        }
+
+        if ($item->is_checked) {
+            return 'app-check-ok';
+        }
+
+        if (filled($item->admin_note)) {
+            return 'app-check-bad';
+        }
+
+        return $item->hasDocumentReference() ? 'app-check-wait' : 'app-check-bad';
+    }
+
     /** Ensure every calon in the admin queue has the same checklist rows (same labels, same order). */
     public static function syncStandardItems(CandidateAdvocate $candidateAdvocate): void
     {

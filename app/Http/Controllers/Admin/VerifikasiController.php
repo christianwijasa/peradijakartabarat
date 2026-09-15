@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\CandidateAdvocate;
 use App\Models\LawFirm;
+use App\Models\VerificationChecklist;
 use App\Support\CandidateVerificationChecklist;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -46,10 +47,67 @@ class VerifikasiController extends Controller
 
     public function setujuiCalon(CandidateAdvocate $candidateAdvocate): RedirectResponse
     {
+        CandidateVerificationChecklist::syncStandardItems($candidateAdvocate);
+
+        abort_unless(
+            CandidateVerificationChecklist::adminQueueStatus($candidateAdvocate) === 'siap',
+            422,
+            'Semua berkas harus disetujui terlebih dahulu.'
+        );
+
         $candidateAdvocate->update(['verification_status' => 'VERIFIED']);
-        $candidateAdvocate->checklistItems()->update(['is_checked' => true]);
 
         return back()->with('status', $candidateAdvocate->user->name.' berhasil diverifikasi.');
+    }
+
+    public function setujuiChecklistItem(VerificationChecklist $verificationChecklist): RedirectResponse
+    {
+        $this->assertCandidateChecklistItem($verificationChecklist);
+
+        $verificationChecklist->update([
+            'is_checked' => true,
+            'admin_note' => null,
+        ]);
+
+        $ca = $verificationChecklist->checkable;
+        if ($ca instanceof CandidateAdvocate && $ca->verification_status === 'NEEDS_CORRECTION') {
+            $ca->update(['verification_status' => 'PENDING']);
+        }
+
+        return back()->with('status', 'Berkas "'.$verificationChecklist->label.'" disetujui.');
+    }
+
+    public function tolakChecklistItem(Request $request, VerificationChecklist $verificationChecklist): RedirectResponse
+    {
+        $this->assertCandidateChecklistItem($verificationChecklist);
+
+        $data = $request->validate([
+            'admin_note' => ['required', 'string', 'max:500'],
+        ]);
+
+        $verificationChecklist->update([
+            'is_checked' => false,
+            'admin_note' => $data['admin_note'],
+        ]);
+
+        $ca = $verificationChecklist->checkable;
+        if ($ca instanceof CandidateAdvocate) {
+            $ca->update(['verification_status' => 'NEEDS_CORRECTION']);
+        }
+
+        return back()->with('status', 'Berkas "'.$verificationChecklist->label.'" perlu diperbaiki calon advokat.');
+    }
+
+    private function assertCandidateChecklistItem(VerificationChecklist $verificationChecklist): void
+    {
+        abort_unless($verificationChecklist->checkable_type === CandidateAdvocate::class, 404);
+
+        $ca = $verificationChecklist->checkable;
+        abort_unless(
+            $ca instanceof CandidateAdvocate
+            && in_array($ca->verification_status, ['PENDING', 'NEEDS_CORRECTION'], true),
+            403
+        );
     }
 
     public function tetapkanKuotaFirm(LawFirm $lawFirm): RedirectResponse

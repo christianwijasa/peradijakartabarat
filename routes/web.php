@@ -67,6 +67,8 @@ Route::middleware(['auth', 'role:admin_dpc'])->prefix('admin')->name('admin.')->
     Route::redirect('/verifikasi', '/admin/verification');
     Route::get('/verification', [AdminVerifikasiController::class, 'index'])->name('verification');
     Route::post('/verification/candidate/{candidateAdvocate}/setujui', [AdminVerifikasiController::class, 'setujuiCalon'])->name('verification.candidate.setujui');
+    Route::post('/verification/checklist/{verificationChecklist}/setujui', [AdminVerifikasiController::class, 'setujuiChecklistItem'])->name('verification.checklist.setujui');
+    Route::post('/verification/checklist/{verificationChecklist}/tolak', [AdminVerifikasiController::class, 'tolakChecklistItem'])->name('verification.checklist.tolak');
     Route::post('/verification/firm/{lawFirm}/tetapkan-kuota', [AdminVerifikasiController::class, 'tetapkanKuotaFirm'])->name('verification.firm.tetapkan-kuota');
     Route::get('/monitoring', [AdminMonitoringController::class, 'index'])->name('monitoring');
     Route::get('/registrants', [AdminRegistrantsController::class, 'index'])->name('registrants');

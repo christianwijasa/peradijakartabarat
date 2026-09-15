@@ -37,26 +37,51 @@
                             <p class="font-medium">{{ $ca->user->name }}</p>
                             <p class="text-xs text-muted-foreground mt-0.5">NIK {{ $ca->national_id_number ? substr($ca->national_id_number, 0, 4).'••••' : '—' }} · UPA {{ $ca->bar_exam_cohort ?? '—' }}</p>
                         </div>
-                        <div class="flex-1 app-card-muted px-4 py-3 flex flex-col gap-2">
+                        <div class="flex-1 app-card-muted px-4 py-3 flex flex-col gap-3">
                             @foreach (\App\Support\CandidateVerificationChecklist::defaultItems() as $def)
                                 @php
                                     $item = $itemsByLabel->get($def['label']);
-                                    $isChecked = $item?->is_checked ?? false;
-                                    $hasLink = $item?->hasDocumentReference() ?? false;
+                                    $icon = \App\Support\CandidateVerificationChecklist::itemIconClass($item);
                                 @endphp
-                                <div class="flex items-start gap-2.5 text-sm leading-snug">
-                                    <span @class([
-                                        $isChecked ? 'app-check-ok' : ($hasLink ? 'app-check-wait' : 'app-check-bad'),
-                                        'mt-1.5',
-                                    ])></span>
-                                    <span>
-                                        {{ $def['label'] }}
-                                        @if ($item?->document_url)
-                                            · <a href="{{ $item->document_url }}" target="_blank" rel="noopener noreferrer" class="text-primary underline underline-offset-2 text-xs">Buka link</a>
-                                        @elseif ($hasLink)
-                                            <span class="text-xs text-muted-foreground"> · Berkas tersimpan</span>
-                                        @endif
-                                    </span>
+                                <div class="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-3">
+                                    <div class="flex items-start gap-2.5 text-sm leading-snug flex-1 min-w-0">
+                                        <span @class([$icon, 'mt-1.5 shrink-0'])></span>
+                                        <span class="min-w-0">
+                                            {{ $def['label'] }}
+                                            @if ($item?->document_url)
+                                                · <a href="{{ $item->document_url }}" target="_blank" rel="noopener noreferrer" class="text-primary underline underline-offset-2 text-xs">Buka link</a>
+                                            @elseif ($item?->hasDocumentReference())
+                                                <span class="text-xs text-muted-foreground"> · Berkas tersimpan</span>
+                                            @endif
+                                            @if ($item?->admin_note)
+                                                <span class="block text-xs text-tag-bad-fg mt-1">Catatan: {{ $item->admin_note }}</span>
+                                            @endif
+                                        </span>
+                                    </div>
+                                    @if ($item)
+                                        <div class="flex flex-col gap-2 shrink-0 sm:max-w-[220px] pl-4 sm:pl-0">
+                                            @if ($item->is_checked)
+                                                <x-tag variant="ok" class="self-start">Disetujui</x-tag>
+                                            @else
+                                                <form method="POST" action="{{ route('admin.verification.checklist.setujui', $item) }}">
+                                                    @csrf
+                                                    <x-btn class="w-full !px-3 !py-2">Setujui berkas</x-btn>
+                                                </form>
+                                                <form method="POST" action="{{ route('admin.verification.checklist.tolak', $item) }}" class="flex flex-col gap-1.5">
+                                                    @csrf
+                                                    <textarea
+                                                        name="admin_note"
+                                                        rows="2"
+                                                        required
+                                                        maxlength="500"
+                                                        placeholder="Catatan revisi untuk calon advokat"
+                                                        class="app-input text-xs !py-2"
+                                                    ></textarea>
+                                                    <x-btn type="submit" variant="danger-outline" class="w-full !px-3 !py-2">Minta revisi</x-btn>
+                                                </form>
+                                            @endif
+                                        </div>
+                                    @endif
                                 </div>
                             @endforeach
                         </div>
@@ -70,7 +95,7 @@
                             @endif
                             <form method="POST" action="{{ route('admin.verification.candidate.setujui', $ca) }}" class="w-full sm:w-auto">
                                 @csrf
-                                <x-btn class="w-full sm:w-auto">Setujui</x-btn>
+                                <x-btn class="w-full sm:w-auto" @disabled($queueStatus !== 'siap')>Setujui admisi</x-btn>
                             </form>
                         </div>
                     </div>
