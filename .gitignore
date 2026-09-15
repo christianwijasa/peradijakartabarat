@@ -20,3 +20,7 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+.codacy/
+
+#Ignore cursor AI rules
+.cursor/rules/codacy.mdc
