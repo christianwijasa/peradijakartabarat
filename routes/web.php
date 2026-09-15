@@ -39,7 +39,7 @@ Route::middleware(['auth', 'role:calon_advokat'])->prefix('calon')->name('calon.
     Route::post('/logbook', [LogbookController::class, 'store'])->name('logbook.store');
     Route::get('/berkas', [BerkasController::class, 'index'])->name('berkas');
     Route::get('/verifikasi', [CalonVerifikasiController::class, 'index'])->name('verifikasi');
-    Route::post('/verifikasi/{verificationChecklist}/upload', [CalonVerifikasiController::class, 'upload'])->name('verifikasi.upload');
+    Route::post('/verifikasi/{verificationChecklist}/link', [CalonVerifikasiController::class, 'storeLink'])->name('verifikasi.link');
 });
 
 Route::middleware(['auth', 'role:law_firm'])->prefix('firm')->name('firm.')->group(function () {

@@ -9,7 +9,6 @@ use App\Support\CandidateVerificationChecklist;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class VerifikasiController extends Controller
@@ -28,7 +27,7 @@ class VerifikasiController extends Controller
         ]);
     }
 
-    public function upload(Request $request, VerificationChecklist $verificationChecklist): RedirectResponse
+    public function storeLink(Request $request, VerificationChecklist $verificationChecklist): RedirectResponse
     {
         $ca = Auth::user()->candidateAdvocate;
 
@@ -38,36 +37,17 @@ class VerifikasiController extends Controller
             403
         );
 
-        $uploadLabels = collect(CandidateVerificationChecklist::defaultItems())
-            ->filter(fn ($i) => $i['requires_upload'])
-            ->pluck('label')
-            ->all();
-
-        abort_unless(in_array($verificationChecklist->label, $uploadLabels, true), 422);
+        abort_unless(CandidateVerificationChecklist::requiresUpload($verificationChecklist->label), 422);
 
         $validated = $request->validate([
-            'document' => ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
+            'document_url' => ['required', 'url', 'max:2048'],
         ]);
 
-        $file = $validated['document'];
-        $directory = 'verification/'.$ca->id;
-
-        if ($verificationChecklist->file_path) {
-            Storage::disk('public')->delete($verificationChecklist->file_path);
-        }
-
-        $path = $file->store($directory, 'public');
-        $sizeKb = (int) ceil($file->getSize() / 1024);
-        $sizeLabel = $sizeKb >= 1024
-            ? number_format($sizeKb / 1024, 1, ',', '.').' MB'
-            : number_format($sizeKb, 0, ',', '.').' KB';
-
         $verificationChecklist->update([
-            'file_path' => $path,
-            'file_size_label' => $sizeLabel,
+            'document_url' => $validated['document_url'],
             'is_checked' => false,
         ]);
 
-        return back()->with('status', 'Berkas "'.$verificationChecklist->label.'" berhasil diunggah. Menunggu review Admin DPC.');
+        return back()->with('status', 'Link berkas "'.$verificationChecklist->label.'" tersimpan. Menunggu review Admin DPC.');
     }
 }

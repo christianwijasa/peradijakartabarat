@@ -70,7 +70,9 @@ final class CandidateVerificationChecklist
 
         return $candidateAdvocate->checklistItems()
             ->whereIn('label', $uploadLabels)
-            ->whereNull('file_path')
+            ->where(function ($query) {
+                $query->whereNull('document_url')->whereNull('file_path');
+            })
             ->count();
     }
 
@@ -128,16 +130,16 @@ final class CandidateVerificationChecklist
         $rows = [];
         foreach (self::defaultItems() as $item) {
             $label = $item['label'];
+            $hasDoc = $item['requires_upload'] && ($checkedByLabel[$label] ?? false);
             $rows[] = [
                 'checkable_type' => CandidateAdvocate::class,
                 'checkable_id' => $candidateAdvocate->id,
                 'label' => $label,
-                'file_path' => ($item['requires_upload'] && ($checkedByLabel[$label] ?? false))
-                    ? 'demo/'.$candidateAdvocate->id.'/'.md5($label).'.pdf'
+                'file_path' => null,
+                'file_size_label' => null,
+                'document_url' => $hasDoc
+                    ? 'https://drive.google.com/file/d/demo-'.$candidateAdvocate->id.'-'.md5($label).'/view'
                     : null,
-                'file_size_label' => $fileSizeByLabel[$label] ?? (
-                    ($item['requires_upload'] && ($checkedByLabel[$label] ?? false)) ? '1,0 MB' : null
-                ),
                 'is_checked' => $checkedByLabel[$label] ?? false,
                 'created_at' => $now,
                 'updated_at' => $now,
@@ -159,7 +161,7 @@ final class CandidateVerificationChecklist
             if (! $item) {
                 return 'belum_lengkap';
             }
-            if ($def['requires_upload'] && ! filled($item->file_path) && ! $item->is_checked) {
+            if ($def['requires_upload'] && ! $item->hasDocumentReference() && ! $item->is_checked) {
                 return 'belum_lengkap';
             }
         }

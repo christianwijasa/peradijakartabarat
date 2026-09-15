@@ -75,6 +75,8 @@ Registrasi mandiri: Advocate candidate (`/register/advocate-candidate`, `/regist
 
 **Login 419 PAGE EXPIRED?** Set `APP_URL` to the exact public URL (including `https://` and subfolder path). Run `php artisan config:clear`. Ensure `storage/framework/sessions` is writable. After deploy, log in again in a fresh tab.
 
+**`storage:link` → `symlink()` undefined?** Verifikasi admisi calon advokat hanya menyimpan **tautan URL** berkas (Google Drive, dll.) — **`php artisan storage:link` tidak diperlukan** untuk fitur itu.
+
 Same layout as other fchr.space Laravel apps: git clone lives in `src/`, `public/` contents (`index.php`, `.htaccess`, `build/`) sit beside `src/`. Point `index.php` at `src/vendor` and `src/bootstrap/app.php`; call `$app->usePublicPath(__DIR__)` only when `build/manifest.json` exists next to `index.php`. Run `npm run build` in `src/` (manifest defaults to `src/public/build/`). Set `APP_URL` and `SESSION_PATH` to the subfolder path. Avoid `route:cache` on the host; clear `bootstrap/cache/routes-v7.php` if `/` rejects GET.
 
 ## Struktur data inti

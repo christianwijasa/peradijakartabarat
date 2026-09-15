@@ -16,8 +16,14 @@ class VerificationChecklist extends Model
         'label',
         'file_path',
         'file_size_label',
+        'document_url',
         'is_checked',
     ];
+
+    public function hasDocumentReference(): bool
+    {
+        return filled($this->document_url) || filled($this->file_path);
+    }
 
     protected $casts = [
         'is_checked' => 'boolean',

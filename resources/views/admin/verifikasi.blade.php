@@ -42,17 +42,19 @@
                                 @php
                                     $item = $itemsByLabel->get($def['label']);
                                     $isChecked = $item?->is_checked ?? false;
-                                    $hasFile = filled($item?->file_path);
+                                    $hasLink = $item?->hasDocumentReference() ?? false;
                                 @endphp
                                 <div class="flex items-start gap-2.5 text-sm leading-snug">
                                     <span @class([
-                                        $isChecked ? 'app-check-ok' : ($hasFile ? 'app-check-wait' : 'app-check-bad'),
+                                        $isChecked ? 'app-check-ok' : ($hasLink ? 'app-check-wait' : 'app-check-bad'),
                                         'mt-1.5',
                                     ])></span>
                                     <span>
                                         {{ $def['label'] }}
-                                        @if ($hasFile)
-                                            <span class="text-xs text-muted-foreground"> · {{ $item->file_size_label ?? 'Berkas diunggah' }}</span>
+                                        @if ($item?->document_url)
+                                            · <a href="{{ $item->document_url }}" target="_blank" rel="noopener noreferrer" class="text-primary underline underline-offset-2 text-xs">Buka link</a>
+                                        @elseif ($hasLink)
+                                            <span class="text-xs text-muted-foreground"> · Berkas tersimpan</span>
                                         @endif
                                     </span>
                                 </div>
