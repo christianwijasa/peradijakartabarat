@@ -5,6 +5,7 @@ namespace App\Support;
 use App\Models\CandidateAdvocate;
 use App\Models\InternshipApplication;
 use App\Models\LawFirm;
+use App\Support\CandidateVerificationChecklist;
 use Illuminate\Support\Facades\Auth;
 
 class SidebarMenu
@@ -13,9 +14,13 @@ class SidebarMenu
     {
         $ca = Auth::user()->candidateAdvocate;
         $logbookBadge = $ca ? $ca->logbookEntries()->where('status', 'PENDING_SIGNATURE')->count() : 0;
+        $verifikasiBadge = $ca && in_array($ca->verification_status, ['PENDING', 'NEEDS_CORRECTION'], true)
+            ? CandidateVerificationChecklist::pendingUploadCount($ca)
+            : 0;
 
         return [
             ['label' => 'Dashboard', 'route' => route('calon.dashboard'), 'active' => $active === 'dashboard'],
+            ['label' => 'Verifikasi Admisi', 'route' => route('calon.verifikasi'), 'active' => $active === 'verifikasi', 'badge' => $verifikasiBadge ?: null],
             ['label' => 'Cari Lowongan', 'route' => route('calon.lowongan'), 'active' => $active === 'lowongan'],
             ['label' => 'Lamaran Saya', 'route' => route('calon.lamaran'), 'active' => $active === 'lamaran'],
             ['label' => 'Logbook Digital', 'route' => route('calon.logbook'), 'active' => $active === 'logbook', 'badge' => $logbookBadge ?: null],

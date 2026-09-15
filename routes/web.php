@@ -7,6 +7,7 @@ use App\Http\Controllers\Calon\DashboardController as CalonDashboardController;
 use App\Http\Controllers\Calon\LamaranController;
 use App\Http\Controllers\Calon\LogbookController;
 use App\Http\Controllers\Calon\LowonganController;
+use App\Http\Controllers\Calon\VerifikasiController as CalonVerifikasiController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Firm\DashboardController as FirmDashboardController;
@@ -37,6 +38,8 @@ Route::middleware(['auth', 'role:calon_advokat'])->prefix('calon')->name('calon.
     Route::get('/logbook', [LogbookController::class, 'index'])->name('logbook');
     Route::post('/logbook', [LogbookController::class, 'store'])->name('logbook.store');
     Route::get('/berkas', [BerkasController::class, 'index'])->name('berkas');
+    Route::get('/verifikasi', [CalonVerifikasiController::class, 'index'])->name('verifikasi');
+    Route::post('/verifikasi/{verificationChecklist}/upload', [CalonVerifikasiController::class, 'upload'])->name('verifikasi.upload');
 });
 
 Route::middleware(['auth', 'role:law_firm'])->prefix('firm')->name('firm.')->group(function () {

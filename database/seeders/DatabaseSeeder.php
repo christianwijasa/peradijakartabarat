@@ -13,6 +13,7 @@ use App\Models\MonthlyLogbookSummary;
 use App\Models\JobPosting;
 use App\Models\User;
 use App\Models\VerificationChecklist;
+use App\Support\CandidateVerificationChecklist;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -214,10 +215,13 @@ class DatabaseSeeder extends Seeder
             'national_id_number' => '3172014455660005', 'university' => 'Universitas Indonesia', 'gpa' => 3.61,
             'bar_exam_cohort' => 'Gelombang II 2025', 'bar_exam_graduation_year' => 2025, 'verification_status' => 'PENDING',
         ]);
-        VerificationChecklist::insert([
-            ['checkable_type' => CandidateAdvocate::class, 'checkable_id' => $maya->id, 'label' => 'Data profil auto-populate dari admisi', 'is_checked' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['checkable_type' => CandidateAdvocate::class, 'checkable_id' => $maya->id, 'label' => 'Status keanggotaan DPC aktif', 'is_checked' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['checkable_type' => CandidateAdvocate::class, 'checkable_id' => $maya->id, 'label' => 'Sertifikat Lulus UPA terverifikasi', 'is_checked' => true, 'created_at' => now(), 'updated_at' => now()],
+        CandidateVerificationChecklist::seedDemoState($maya, [
+            'Sertifikat PKPA cocok data admisi' => true,
+            'Sertifikat Lulus UPA terverifikasi' => true,
+            'Ijazah S.H. terbaca jelas' => true,
+            'Pasfoto latar merah sesuai ketentuan' => true,
+            'Data profil lengkap (NIK & universitas)' => true,
+            'Status keanggotaan DPC aktif' => true,
         ]);
         InternshipApplication::create(['candidate_advocate_id' => $maya->id, 'job_posting_id' => $jobPostingWibisono->id, 'status' => 'INTERVIEW', 'applied_on' => now()->subDays(4)]);
 
@@ -225,10 +229,13 @@ class DatabaseSeeder extends Seeder
             'national_id_number' => '3174012233440006', 'university' => 'Universitas Trisakti', 'gpa' => 3.42,
             'bar_exam_cohort' => 'Gelombang II 2025', 'bar_exam_graduation_year' => 2025, 'verification_status' => 'NEEDS_CORRECTION',
         ]);
-        VerificationChecklist::insert([
-            ['checkable_type' => CandidateAdvocate::class, 'checkable_id' => $bagus->id, 'label' => 'Sertifikat PKPA cocok data admisi', 'is_checked' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['checkable_type' => CandidateAdvocate::class, 'checkable_id' => $bagus->id, 'label' => 'Sertifikat Lulus UPA terverifikasi', 'is_checked' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['checkable_type' => CandidateAdvocate::class, 'checkable_id' => $bagus->id, 'label' => 'Pasfoto latar merah tidak sesuai', 'is_checked' => false, 'created_at' => now(), 'updated_at' => now()],
+        CandidateVerificationChecklist::seedDemoState($bagus, [
+            'Sertifikat PKPA cocok data admisi' => true,
+            'Sertifikat Lulus UPA terverifikasi' => true,
+            'Ijazah S.H. terbaca jelas' => true,
+            'Pasfoto latar merah sesuai ketentuan' => false,
+            'Data profil lengkap (NIK & universitas)' => true,
+            'Status keanggotaan DPC aktif' => true,
         ]);
         InternshipApplication::create(['candidate_advocate_id' => $bagus->id, 'job_posting_id' => $jobPostingWibisono->id, 'status' => 'CV_REVIEW', 'applied_on' => now()->subDays(6)]);
 
@@ -236,10 +243,13 @@ class DatabaseSeeder extends Seeder
             'national_id_number' => '3173015566770007', 'university' => 'Universitas Tarumanagara', 'gpa' => 3.70,
             'bar_exam_cohort' => 'Gelombang I 2026', 'bar_exam_graduation_year' => 2026, 'verification_status' => 'PENDING',
         ]);
-        VerificationChecklist::insert([
-            ['checkable_type' => CandidateAdvocate::class, 'checkable_id' => $laras->id, 'label' => 'Sertifikat PKPA cocok data admisi', 'is_checked' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['checkable_type' => CandidateAdvocate::class, 'checkable_id' => $laras->id, 'label' => 'Sertifikat Lulus UPA terverifikasi', 'is_checked' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['checkable_type' => CandidateAdvocate::class, 'checkable_id' => $laras->id, 'label' => 'Ijazah S.H. terbaca jelas', 'is_checked' => true, 'created_at' => now(), 'updated_at' => now()],
+        CandidateVerificationChecklist::seedDemoState($laras, [
+            'Sertifikat PKPA cocok data admisi' => true,
+            'Sertifikat Lulus UPA terverifikasi' => true,
+            'Ijazah S.H. terbaca jelas' => true,
+            'Pasfoto latar merah sesuai ketentuan' => true,
+            'Data profil lengkap (NIK & universitas)' => true,
+            'Status keanggotaan DPC aktif' => false,
         ]);
         InternshipApplication::create(['candidate_advocate_id' => $laras->id, 'job_posting_id' => $jobPostingWibisono->id, 'status' => 'CV_REVIEW', 'applied_on' => now()->subDays(2)]);
 

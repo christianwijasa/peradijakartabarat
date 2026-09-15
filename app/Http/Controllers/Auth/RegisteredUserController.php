@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\CandidateAdvocate;
 use App\Models\User;
+use App\Support\CandidateVerificationChecklist;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -51,7 +52,7 @@ class RegisteredUserController extends Controller
             $year = now()->year;
             $sequence = CandidateAdvocate::whereYear('created_at', $year)->count() + 1;
 
-            CandidateAdvocate::create([
+            $candidateAdvocate = CandidateAdvocate::create([
                 'user_id' => $user->id,
                 'candidate_code' => sprintf('CA-%d-%04d', $year, $sequence),
                 'national_id_number' => $request->national_id_number,
@@ -60,6 +61,9 @@ class RegisteredUserController extends Controller
                 'verification_status' => 'PENDING',
             ]);
 
+            CandidateVerificationChecklist::seedFor($candidateAdvocate);
+            CandidateVerificationChecklist::syncProfileItem($candidateAdvocate);
+
             return $user;
         });
 
@@ -67,6 +71,7 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect(route('calon.verifikasi', absolute: false))
+            ->with('status', 'Akun berhasil dibuat. Lengkapi unggahan berkas verifikasi admisi.');
     }
 }

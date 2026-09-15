@@ -29,23 +29,43 @@
             @if ($tab === 'calon')
                 @forelse ($queueCalon as $ca)
                     @php
-                        $siap = $ca->checklistItems->every(fn ($c) => $c->is_checked);
+                        $queueStatus = \App\Support\CandidateVerificationChecklist::adminQueueStatus($ca);
+                        $itemsByLabel = $ca->fresh()->checklistItems->keyBy('label');
                     @endphp
                     <div class="flex flex-col lg:flex-row lg:items-center gap-4 px-5 md:px-6 py-5">
                         <div class="lg:w-64 shrink-0">
                             <p class="font-medium">{{ $ca->user->name }}</p>
-                            <p class="text-xs text-muted-foreground mt-0.5">NIK {{ $ca->national_id_number ? substr($ca->national_id_number, 0, 4).'••••' : '—' }} · UPA {{ $ca->bar_exam_cohort }}</p>
+                            <p class="text-xs text-muted-foreground mt-0.5">NIK {{ $ca->national_id_number ? substr($ca->national_id_number, 0, 4).'••••' : '—' }} · UPA {{ $ca->bar_exam_cohort ?? '—' }}</p>
                         </div>
                         <div class="flex-1 app-card-muted px-4 py-3 flex flex-col gap-2">
-                            @foreach ($ca->checklistItems as $item)
+                            @foreach (\App\Support\CandidateVerificationChecklist::defaultItems() as $def)
+                                @php
+                                    $item = $itemsByLabel->get($def['label']);
+                                    $isChecked = $item?->is_checked ?? false;
+                                    $hasFile = filled($item?->file_path);
+                                @endphp
                                 <div class="flex items-start gap-2.5 text-sm leading-snug">
-                                    <span @class([$item->is_checked ? 'app-check-ok' : 'app-check-bad', 'mt-1.5'])></span>
-                                    <span>{{ $item->label }}</span>
+                                    <span @class([
+                                        $isChecked ? 'app-check-ok' : ($hasFile ? 'app-check-wait' : 'app-check-bad'),
+                                        'mt-1.5',
+                                    ])></span>
+                                    <span>
+                                        {{ $def['label'] }}
+                                        @if ($hasFile)
+                                            <span class="text-xs text-muted-foreground"> · {{ $item->file_size_label ?? 'Berkas diunggah' }}</span>
+                                        @endif
+                                    </span>
                                 </div>
                             @endforeach
                         </div>
                         <div class="app-queue-actions">
-                            <x-tag :variant="$siap ? 'wait' : 'bad'">{{ $siap ? 'Siap disetujui' : 'Perlu perbaikan' }}</x-tag>
+                            @if ($queueStatus === 'belum_lengkap')
+                                <x-tag variant="bad">Belum lengkap</x-tag>
+                            @elseif ($queueStatus === 'siap')
+                                <x-tag variant="wait">Siap disetujui</x-tag>
+                            @else
+                                <x-tag variant="info">Menunggu review</x-tag>
+                            @endif
                             <form method="POST" action="{{ route('admin.verifikasi.calon.setujui', $ca) }}" class="w-full sm:w-auto">
                                 @csrf
                                 <x-btn class="w-full sm:w-auto">Setujui</x-btn>
@@ -58,7 +78,8 @@
             @else
                 @forelse ($queueFirm as $firm)
                     @php
-                        $siap = $firm->checklistItems->every(fn ($c) => $c->is_checked);
+                        $hasChecklist = $firm->checklistItems->isNotEmpty();
+                        $siap = $hasChecklist && $firm->checklistItems->every(fn ($c) => $c->is_checked);
                     @endphp
                     <div class="flex flex-col lg:flex-row lg:items-center gap-4 px-5 md:px-6 py-5">
                         <div class="lg:w-64 shrink-0">

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\CandidateAdvocate;
 use App\Models\LawFirm;
+use App\Support\CandidateVerificationChecklist;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -18,7 +19,8 @@ class VerifikasiController extends Controller
 
         $queueCalon = CandidateAdvocate::whereIn('verification_status', ['PENDING', 'NEEDS_CORRECTION'])
             ->with(['user', 'checklistItems'])
-            ->get();
+            ->get()
+            ->each(fn (CandidateAdvocate $ca) => CandidateVerificationChecklist::syncStandardItems($ca));
 
         $queueFirm = LawFirm::whereIn('verification_status', ['PENDING', 'NEEDS_CORRECTION'])
             ->with('checklistItems')

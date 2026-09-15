@@ -14,6 +14,8 @@ class VerificationChecklist extends Model
         'checkable_type',
         'checkable_id',
         'label',
+        'file_path',
+        'file_size_label',
         'is_checked',
     ];
 

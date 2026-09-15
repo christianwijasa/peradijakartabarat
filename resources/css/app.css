@@ -140,6 +140,10 @@
         @apply w-2 h-2 rounded-full shrink-0 bg-tag-bad-fg;
     }
 
+    .app-check-wait {
+        @apply w-2 h-2 rounded-full shrink-0 bg-tag-wait-fg;
+    }
+
     .app-btn-on-navy {
         @apply mt-5 w-full rounded-xl border py-3 text-sm font-medium transition min-h-[44px];
     }
