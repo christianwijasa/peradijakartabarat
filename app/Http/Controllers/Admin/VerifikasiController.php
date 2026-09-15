@@ -45,6 +45,25 @@ class VerifikasiController extends Controller
         ]);
     }
 
+    public function showCalon(CandidateAdvocate $candidateAdvocate): View
+    {
+        abort_unless(
+            in_array($candidateAdvocate->verification_status, ['PENDING', 'NEEDS_CORRECTION'], true),
+            404
+        );
+
+        CandidateVerificationChecklist::syncStandardItems($candidateAdvocate);
+
+        $ca = $candidateAdvocate->load(['user', 'checklistItems']);
+        $queueStatus = CandidateVerificationChecklist::adminQueueStatus($ca);
+
+        return view('admin.verification-candidate', [
+            'ca' => $ca,
+            'queueStatus' => $queueStatus,
+            'itemsByLabel' => $ca->checklistItems->keyBy('label'),
+        ]);
+    }
+
     public function setujuiCalon(CandidateAdvocate $candidateAdvocate): RedirectResponse
     {
         CandidateVerificationChecklist::syncStandardItems($candidateAdvocate);

@@ -66,6 +66,7 @@ Route::middleware(['auth', 'role:law_firm'])->prefix('firm')->name('firm.')->gro
 Route::middleware(['auth', 'role:admin_dpc'])->prefix('admin')->name('admin.')->group(function () {
     Route::redirect('/verifikasi', '/admin/verification');
     Route::get('/verification', [AdminVerifikasiController::class, 'index'])->name('verification');
+    Route::get('/verification/candidate/{candidateAdvocate}', [AdminVerifikasiController::class, 'showCalon'])->name('verification.candidate.show');
     Route::post('/verification/candidate/{candidateAdvocate}/setujui', [AdminVerifikasiController::class, 'setujuiCalon'])->name('verification.candidate.setujui');
     Route::post('/verification/checklist/{verificationChecklist}/setujui', [AdminVerifikasiController::class, 'setujuiChecklistItem'])->name('verification.checklist.setujui');
     Route::post('/verification/checklist/{verificationChecklist}/tolak', [AdminVerifikasiController::class, 'tolakChecklistItem'])->name('verification.checklist.tolak');

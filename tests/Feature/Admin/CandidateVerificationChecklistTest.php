@@ -12,6 +12,25 @@ class CandidateVerificationChecklistTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_admin_can_open_candidate_verification_review_page(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin_dpc']);
+        $user = User::factory()->create(['role' => 'calon_advokat']);
+        $ca = CandidateAdvocate::create([
+            'user_id' => $user->id,
+            'candidate_code' => 'CA-2026-0098',
+            'membership_status' => 'ACTIVE',
+            'verification_status' => 'PENDING',
+        ]);
+        CandidateVerificationChecklist::seedFor($ca);
+
+        $this->actingAs($admin)
+            ->get(route('admin.verification.candidate.show', $ca))
+            ->assertOk()
+            ->assertSee('Review berkas admisi')
+            ->assertSee('Setujui berkas ini');
+    }
+
     public function test_admin_can_approve_and_reject_individual_checklist_items(): void
     {
         $admin = User::factory()->create(['role' => 'admin_dpc']);
@@ -28,6 +47,7 @@ class CandidateVerificationChecklistTest extends TestCase
         $item->update(['document_url' => 'https://drive.google.com/file/d/example/view']);
 
         $this->actingAs($admin)
+            ->from(route('admin.verification.candidate.show', $ca))
             ->post(route('admin.verification.checklist.tolak', $item), [
                 'admin_note' => 'Nomor sertifikat tidak cocok dengan NIK.',
             ])
