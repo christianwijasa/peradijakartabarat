@@ -76,7 +76,7 @@
         <div class="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
             <div class="flex flex-col gap-1 text-sm text-center sm:text-left">
                 <a class="text-muted-foreground hover:text-ink underline underline-offset-2" href="{{ route('login') }}">Sudah punya akun?</a>
-                <a class="text-muted-foreground hover:text-ink underline underline-offset-2" href="{{ route('register.advocate-candidate') }}">Register as advocate candidate</a>
+                <a class="text-muted-foreground hover:text-ink underline underline-offset-2" href="{{ route('register.advocate-candidate') }}">Daftar calon advokat</a>
             </div>
 
             <x-primary-button class="w-full sm:w-auto justify-center">
