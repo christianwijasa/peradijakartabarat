@@ -47,7 +47,7 @@ php artisan serve
 | Peran | Email | Catatan |
 |---|---|---|
 | Calon Advokat | `andi@peradijakbar.test` | Magang 14/24 bulan, Wibisono & Rekan |
-| Law Firm / Pendamping | `hendra@peradijakbar.test` | Dr. Hendra Wibisono — pelamar & logbook |
+| Law Firm / Pendamping | `lawfirm@peradijakbar.test` | Dr. Hendra Wibisono — pelamar & logbook |
 | Admin DPC | `admin@peradijakbar.test` | Verifikasi & monitoring |
 
 ### Calon advokat tambahan (password sama)
@@ -69,7 +69,7 @@ php artisan serve
 
 Daftar lengkap juga di `database/seeders/DemoUserCatalog.php`. Jalankan ulang data demo: `php artisan migrate:fresh --seed`.
 
-Registrasi mandiri (`/register`) hanya untuk peran Calon Advokat. Law Firm dan Admin DPC hanya dari seeder / provisi DPC.
+Registrasi mandiri: Advocate candidate (`/register/advocate-candidate`, `/register` redirects), Law firm (`/register/law-firm`). Admin DPC hanya dari seeder / provisi DPC.
 
 ## Shared hosting (repo in `src/`)
 

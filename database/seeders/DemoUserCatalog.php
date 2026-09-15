@@ -25,7 +25,7 @@ final class DemoUserCatalog
             ],
             [
                 'role' => 'law_firm',
-                'email' => 'hendra@peradijakbar.test',
+                'email' => 'lawfirm@peradijakbar.test',
                 'name' => 'Dr. Hendra Wibisono',
                 'highlight' => 'Advokat pendamping Wibisono & Rekan — pelamar, logbook, tanda tangan',
             ],

@@ -69,7 +69,7 @@ class DatabaseSeeder extends Seeder
 
         // ---- Advokat pendamping ----
         $userHendra = User::create([
-            'name' => 'Dr. Hendra Wibisono', 'email' => 'hendra@peradijakbar.test',
+            'name' => 'Dr. Hendra Wibisono', 'email' => 'lawfirm@peradijakbar.test',
             'password' => $password, 'role' => 'law_firm', 'email_verified_at' => now(),
         ]);
         $hendra = SupervisingLawyer::create([
