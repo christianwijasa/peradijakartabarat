@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\MonitoringController as AdminMonitoringController;
+use App\Http\Controllers\Admin\RegistrantsController as AdminRegistrantsController;
 use App\Http\Controllers\Admin\VerifikasiController as AdminVerifikasiController;
 use App\Http\Controllers\Candidate\BerkasController;
 use App\Http\Controllers\Candidate\DashboardController as CandidateDashboardController;
@@ -68,6 +69,7 @@ Route::middleware(['auth', 'role:admin_dpc'])->prefix('admin')->name('admin.')->
     Route::post('/verification/candidate/{candidateAdvocate}/setujui', [AdminVerifikasiController::class, 'setujuiCalon'])->name('verification.candidate.setujui');
     Route::post('/verification/firm/{lawFirm}/tetapkan-kuota', [AdminVerifikasiController::class, 'tetapkanKuotaFirm'])->name('verification.firm.tetapkan-kuota');
     Route::get('/monitoring', [AdminMonitoringController::class, 'index'])->name('monitoring');
+    Route::get('/registrants', [AdminRegistrantsController::class, 'index'])->name('registrants');
 });
 
 require __DIR__.'/auth.php';

@@ -5,6 +5,19 @@
     :menu="\App\Support\SidebarMenu::candidate('lowongan')"
     :user-meta="Auth::user()->candidateAdvocate->candidate_code.' · Alumni Lulus UPA'"
 >
+    @if (! $canApplyForInternship)
+        <div class="rounded-xl border border-line bg-muted px-4 py-3 text-sm text-ink-secondary leading-relaxed" role="status">
+            Lamaran magang baru bisa diajukan setelah verifikasi admisi disetujui Admin DPC. Anda tetap bisa melihat lowongan di bawah.
+            <a href="{{ route('candidate.verification') }}" class="text-primary font-medium underline underline-offset-2">Buka Verifikasi Admisi</a>
+        </div>
+    @endif
+
+    @if ($errors->has('lamaran'))
+        <div class="rounded-xl border border-[#e7cfc7] bg-tag-bad-bg px-4 py-3 text-sm text-tag-bad-fg" role="alert">
+            {{ $errors->first('lamaran') }}
+        </div>
+    @endif
+
     <form method="GET" class="flex flex-col gap-3">
         <input
             type="text" name="q" value="{{ $keyword }}" placeholder="Cari kantor hukum atau kata kunci"
@@ -43,7 +56,11 @@
                     <p class="text-xs text-[#7a7d8b] mb-3">dari kuota {{ $jobPosting->quota }}</p>
                     <form method="POST" action="{{ route('candidate.lowongan.lamar', $jobPosting) }}">
                         @csrf
-                        <x-btn :variant="$sudahMelamar ? 'done' : 'primary'" :disabled="$sudahMelamar">
+                        <x-btn
+                            :variant="$sudahMelamar ? 'done' : 'primary'"
+                            :disabled="$sudahMelamar || ! $canApplyForInternship"
+                            :title="! $canApplyForInternship && ! $sudahMelamar ? 'Menunggu persetujuan verifikasi admisi Admin DPC' : null"
+                        >
                             {{ $sudahMelamar ? 'Lamaran terkirim' : 'Ajukan lamaran' }}
                         </x-btn>
                     </form>

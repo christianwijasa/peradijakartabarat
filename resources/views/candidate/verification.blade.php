@@ -5,10 +5,6 @@
     :menu="\App\Support\SidebarMenu::candidate('verification')"
     :user-meta="$ca->candidate_code.' · Verifikasi '.strtoupper($ca->verification_status)"
 >
-    @if (session('status'))
-        <div class="app-alert-success mb-5" role="status">{{ session('status') }}</div>
-    @endif
-
     <x-card class="overflow-hidden">
         <div class="p-5 md:p-6 border-b border-line">
             <h2 class="app-section-title">Checklist berkas verifikasi</h2>

@@ -86,6 +86,11 @@ class CandidateAdvocate extends Model
         return $this->morphMany(VerificationChecklist::class, 'checkable');
     }
 
+    public function canApplyForInternship(): bool
+    {
+        return $this->verification_status === 'VERIFIED';
+    }
+
     public function bulanBerjalan(): int
     {
         if (! $this->internship_started_on) {

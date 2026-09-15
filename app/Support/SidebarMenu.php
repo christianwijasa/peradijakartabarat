@@ -52,6 +52,7 @@ class SidebarMenu
 
         return [
             ['label' => 'Verifikasi', 'route' => route('admin.verification'), 'active' => $active === 'verification', 'badge' => $badge ?: null],
+            ['label' => 'Data Terdaftar', 'route' => route('admin.registrants'), 'active' => $active === 'registrants'],
             ['label' => 'Monitoring & Audit', 'route' => route('admin.monitoring'), 'active' => $active === 'monitoring'],
         ];
     }

@@ -8,6 +8,7 @@ use App\Models\JobPosting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class LowonganController extends Controller
@@ -38,12 +39,19 @@ class LowonganController extends Controller
             'filter' => $filter,
             'internshipApplicationFirmIds' => $internshipApplicationFirmIds,
             'keyword' => $request->query('q'),
+            'canApplyForInternship' => $ca->canApplyForInternship(),
         ]);
     }
 
     public function lamar(JobPosting $jobPosting): RedirectResponse
     {
         $ca = Auth::user()->candidateAdvocate;
+
+        if (! $ca->canApplyForInternship()) {
+            throw ValidationException::withMessages([
+                'lamaran' => 'Verifikasi admisi belum disetujui Admin DPC. Selesaikan checklist di Verifikasi Admisi terlebih dahulu.',
+            ]);
+        }
 
         if (! $ca->internshipApplications()->where('job_posting_id', $jobPosting->id)->exists()) {
             $ca->internshipApplications()->create([
